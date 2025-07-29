@@ -16,7 +16,7 @@ export function useNavData() {
     () => [
       {
         items: [
-          checkPermission(user, ["manage.system"]) && {
+          {
             title: "dashboard",
             path: paths.dashboard.root,
             //icon: ICONS.analytics,

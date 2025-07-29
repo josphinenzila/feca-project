@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UserRequest;
 use App\Presenters\UserPresenter;
 use App\Services\UserService;
@@ -31,10 +32,9 @@ class UserController extends Controller
         return response()->json(['data' => $response]);
     }
 
-    public function store(UserRequest $request): JsonResponse
+    public function store(CreateUserRequest $request): JsonResponse
     {
         $response = $this->service->createUser($request);
-
         return response()->json(['data' => $response], Response::HTTP_CREATED);
     }
 

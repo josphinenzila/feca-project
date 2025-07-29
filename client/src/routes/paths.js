@@ -27,6 +27,7 @@ export const paths = {
       profile: `${ROUTES.DASHBOARD}/users/profile`,
       account: `${ROUTES.DASHBOARD}/users/account`,
       edit: (id) => `${ROUTES.DASHBOARD}/users/${id}/edit`,
+      view: (id) => `${ROUTES.DASHBOARD}/users/${id}/view`,
     },
   },
 };

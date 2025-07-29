@@ -40,7 +40,6 @@ const RegisterForm: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
-    console.log(success, userInfo);
     if (success && userInfo) {
       router.push("/login");
     }

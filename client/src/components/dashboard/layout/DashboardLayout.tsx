@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { logout } from "@/redux/actions/authActions";
@@ -26,12 +26,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [isClient, setIsClient] = useState(false);
   const { user } = useSelector((state: any) => state.auth);
   const dispatch = useDispatch();
   const router = useRouter();
 
   // Get dynamic navigation data based on user permissions
   const navigationData = useNavData();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Icon mapping for navigation items
   const getIcon = (title: string) => {
@@ -156,6 +161,52 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     await dispatch(reset());
     await router.push("/login");
   };
+
+  // Show loading skeleton during hydration
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Desktop sidebar skeleton */}
+        <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+          <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
+            <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+              <div className="flex items-center flex-shrink-0 px-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gray-200 rounded-lg animate-pulse"></div>
+                  <div className="h-6 w-16 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+              </div>
+              <nav className="mt-5 flex-1 px-2 space-y-1">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div
+                    key={i}
+                    className="h-10 bg-gray-200 rounded animate-pulse"
+                  ></div>
+                ))}
+              </nav>
+            </div>
+          </div>
+        </div>
+
+        {/* Main content skeleton */}
+        <div className="md:pl-64 flex flex-col flex-1">
+          {/* Header skeleton */}
+          <header className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center h-16">
+                <div className="h-6 w-24 bg-gray-200 rounded animate-pulse"></div>
+                <div className="flex items-center space-x-4">
+                  <div className="w-6 h-6 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="w-32 h-8 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          </header>
+          <main className="flex-1">{children}</main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

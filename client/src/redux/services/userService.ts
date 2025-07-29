@@ -22,12 +22,7 @@ const getUsers = async (): Promise<any> => {
 const createUser = async (payload: any): Promise<any> => {
   const response: AxiosResponse<any> = await api.post(
     `${BACKEND_URL}/users`,
-    payload,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    payload
   );
 
   return response.data.data;

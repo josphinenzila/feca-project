@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function UsersPage() {
   return (
-    <PermissionGuard allowedPermissions={["manage.system", "manage.user"]}>
+    <PermissionGuard allowedPermissions={["manage.system"]}>
       <Users />
     </PermissionGuard>
   );

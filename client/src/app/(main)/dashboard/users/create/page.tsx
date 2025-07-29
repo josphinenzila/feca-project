@@ -8,6 +8,9 @@ import { ErrorAlert, FieldError } from "@/components/landing/ui/Form";
 import { getFieldError, getGeneralError } from "@/utils/errorUtils";
 import api from "@/redux/services/api";
 import { app } from "@/config";
+import { paths } from "@/routes/paths";
+import { createUser } from "@/redux/actions/userActions";
+import { useDispatch, useSelector } from "react-redux";
 
 const { BACKEND_URL } = app;
 
@@ -29,11 +32,19 @@ interface CreateUserFormData {
 
 export default function CreateUser() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   const [success, setSuccess] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
   const [loadingRoles, setLoadingRoles] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+
+  const {
+    error: userError,
+    success: userSuccess,
+    userData,
+  } = useSelector((state: any) => state.user);
 
   const [formData, setFormData] = useState<CreateUserFormData>({
     firstName: "",
@@ -58,38 +69,35 @@ export default function CreateUser() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Fetch roles on component mount
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+
     const fetchRoles = async () => {
       try {
         setLoadingRoles(true);
         const { data } = await api.get(`${BACKEND_URL}/roles`);
-        setRoles(data.data || data); // Handle different response structures
+        setRoles(data.data || data);
         setLoadingRoles(false);
       } catch (err) {
         console.error("Error fetching roles:", err);
-        setLoadingRoles(false);
-        // Set default roles if API fails
-        setRoles([
-          { id: 1, name: "Admin", description: "System Administrator" },
-          { id: 2, name: "Manager", description: "Program Manager" },
-          { id: 3, name: "User", description: "Regular User" },
-        ]);
       }
     };
 
     fetchRoles();
-  }, []);
+  }, [isClient]);
 
-  // Reset success state after showing it
   useEffect(() => {
-    if (success) {
+    if (userSuccess && userData) {
       const timer = setTimeout(() => {
-        router.push("/dashboard/users");
+        router.push(paths.dashboard.users.root);
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [success, router]);
+  }, [userData, userSuccess, router]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -100,7 +108,6 @@ export default function CreateUser() {
       [name]: name === "roleId" ? (value ? parseInt(value) : "") : value,
     }));
 
-    // Clear errors when user starts typing
     if (error) {
       setError(null);
     }
@@ -143,8 +150,8 @@ export default function CreateUser() {
         password,
         roleId: Number(roleId),
       };
-
-      await api.post(`${BACKEND_URL}/users`, userData);
+      //@ts-ignore
+      dispatch(createUser(userData));
 
       setSuccess(true);
       setLoading(false);
@@ -156,10 +163,17 @@ export default function CreateUser() {
   };
 
   const handleCancel = () => {
-    router.push("/dashboard/users");
+    router.push(paths.dashboard.users.root);
   };
 
-  // Extract error messages
+  if (!isClient) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   const generalError = getGeneralError(error);
   const firstNameError = getFieldError(error, "firstName");
   const lastNameError = getFieldError(error, "lastName");
@@ -168,7 +182,7 @@ export default function CreateUser() {
   const passwordError = getFieldError(error, "password");
   const roleError = getFieldError(error, "roleId");
 
-  if (success) {
+  if (userData && userSuccess) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Card>
@@ -205,7 +219,7 @@ export default function CreateUser() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="w-3/4 my-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Create New User</h1>
@@ -231,19 +245,14 @@ export default function CreateUser() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
         <div className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
             <ErrorAlert message={generalError} />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Left Column - Personal & Contact Information */}
               <div className="space-y-6">
-                {/* Personal Information Section */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    Personal Information
-                  </h3>
                   <div className="space-y-4">
                     <div>
                       <label
@@ -287,11 +296,7 @@ export default function CreateUser() {
                   </div>
                 </div>
 
-                {/* Contact Information Section */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    Contact Information
-                  </h3>
                   <div className="space-y-4">
                     <div>
                       <label
@@ -336,13 +341,8 @@ export default function CreateUser() {
                 </div>
               </div>
 
-              {/* Right Column - Role & Security */}
               <div className="space-y-6">
-                {/* Role Selection */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    Role & Permissions
-                  </h3>
                   <div>
                     <label
                       htmlFor="roleId"
@@ -373,11 +373,7 @@ export default function CreateUser() {
                   </div>
                 </div>
 
-                {/* Password Section */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    Account Security
-                  </h3>
                   <div className="space-y-4">
                     <div>
                       <label
@@ -516,7 +512,6 @@ export default function CreateUser() {
               </div>
             </div>
 
-            {/* Form Actions */}
             <div className="flex items-center justify-end space-x-4 pt-6 border-t">
               <Button
                 type="button"
@@ -527,7 +522,7 @@ export default function CreateUser() {
                 Cancel
               </Button>
               <Button
-                type="submit"
+                onClick={handleSubmit}
                 disabled={
                   loading || password !== password_confirmation || !roleId
                 }
@@ -577,7 +572,7 @@ export default function CreateUser() {
                 )}
               </Button>
             </div>
-          </form>
+          </div>
         </div>
       </Card>
     </div>
