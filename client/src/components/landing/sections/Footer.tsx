@@ -64,18 +64,18 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  href="/news"
+                  href="/testimonials"
                   className="text-gray-400 hover:text-emerald-400 transition-colors text-sm"
                 >
-                  News
+                  Testimonials
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/get-involved"
+                  href="/contact"
                   className="text-gray-400 hover:text-emerald-400 transition-colors text-sm"
                 >
-                  Get Involved
+                  Contact
                 </Link>
               </li>
             </ul>
