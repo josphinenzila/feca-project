@@ -1,0 +1,163 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Setup PHP for Laravel
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, mysql, gd
+          coverage: none
+
+      # Setup Node.js for Next.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      # Install Laravel dependencies
+      - name: Install Laravel dependencies
+        working-directory: ./api
+        run: |
+          composer install --optimize-autoloader --no-dev
+
+      # Create Laravel environment file with secrets
+      - name: Create Laravel .env file
+        working-directory: ./api
+        run: |
+          cat > .env << EOF
+          APP_NAME=${{ secrets.LARAVEL_APP_NAME }}
+          APP_ENV=production
+          APP_KEY=${{ secrets.LARAVEL_APP_KEY }}
+          APP_DEBUG=true
+          APP_TIMEZONE=UTC
+          APP_URL=${{ secrets.LARAVEL_APP_URL }}
+          APP_LOCALE=en
+          APP_FALLBACK_LOCALE=en
+          APP_FAKER_LOCALE=en_US
+          APP_MAINTENANCE_DRIVER=file
+          PHP_CLI_SERVER_WORKERS=4
+          BCRYPT_ROUNDS=12
+          LOG_CHANNEL=stack
+          LOG_STACK=single
+          LOG_DEPRECATIONS_CHANNEL=null
+          LOG_LEVEL=error
+          DB_CONNECTION=mysql
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          DB_DATABASE=${{ secrets.DB_DATABASE }}
+          DB_USERNAME=${{ secrets.DB_USERNAME }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          SESSION_DRIVER=database
+          SESSION_LIFETIME=120
+          SESSION_ENCRYPT=false
+          SESSION_PATH=/
+          SESSION_DOMAIN=null
+          BROADCAST_CONNECTION=log
+          FILESYSTEM_DISK=local
+          QUEUE_CONNECTION=database
+
+          JWT_PUBLIC_KEY="${{ secrets.JWT_PUBLIC_KEY }}"
+          JWT_PRIVATE_KEY="${{ secrets.JWT_PRIVATE_KEY }}"
+          ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
+          EOF
+
+      # Install Node.js dependencies for Next.js
+      - name: Install Next.js dependencies
+        working-directory: ./client
+        run: npm ci
+
+      # Create Next.js environment file with secrets
+      - name: Create Next.js .env.local file
+        working-directory: ./client
+        run: |
+          cat > .env.local << EOF
+          NEXT_PUBLIC_APP_ENV=${{ secrets.NEXT_PUBLIC_APP_ENV }}
+          NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+          NEXT_PUBLIC_DOMAIN_URL=${{ secrets.NEXT_PUBLIC_DOMAIN_URL }}
+          EOF
+
+      # Build Next.js application
+      - name: Build Next.js app
+        working-directory: ./client
+        run: |
+          npm run build
+
+      # Create deployment package
+      - name: Create deployment package
+        run: |
+          # Create directories for deployment
+          mkdir -p deploy/api
+          mkdir -p deploy/client
+
+          # Copy Laravel files (exclude unnecessary files)
+          rsync -av --exclude='node_modules' --exclude='.git' --exclude='tests' --exclude='storage/logs/*' --exclude='storage/framework/cache/*' --exclude='storage/framework/sessions/*' --exclude='storage/framework/views/*' ./api/ deploy/api/
+
+          # Copy Next.js build files
+          cp -r ./client/.next deploy/client/
+          cp -r ./client/public deploy/client/
+          cp ./client/package.json deploy/client/
+          cp ./client/.env.local deploy/client/
+          cp ./client/next.config.js deploy/client/ || true
+
+          # Create production package
+          tar -czf deployment.tar.gz -C deploy .
+
+      # Deploy to cPanel via FTP
+      - name: Deploy to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          password: ${{ secrets.CPANEL_PASSWORD }}
+          local-dir: ./deploy/
+          server-dir: /public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.env
+            **/tests/**
+
+      # Run Laravel post-deployment commands
+      - name: Run Laravel commands via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          password: ${{ secrets.CPANEL_PASSWORD }}
+          script: |
+            cd public_html/api
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan migrate --force
+
+      # Setup Next.js on cPanel (if Node.js is available)
+      - name: Setup Next.js on cPanel
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          password: ${{ secrets.CPANEL_PASSWORD }}
+          script: |
+            cd public_html/client
+            npm install --production
+            # If using PM2 or similar process manager
+            # pm2 restart nextjs-app || pm2 start npm --name "nextjs-app" -- start
