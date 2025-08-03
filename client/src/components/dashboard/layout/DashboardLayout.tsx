@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { logout } from "@/redux/actions/authActions";
 import { reset } from "@/redux/slices/authSlice";
 import { useNavData } from "@/components/dashboard/sections/config-navigation";
@@ -30,13 +30,58 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { user } = useSelector((state: any) => state.auth);
   const dispatch = useDispatch();
   const router = useRouter();
+  const pathname = usePathname(); // Get current path
 
   // Get dynamic navigation data based on user permissions
   const navigationData = useNavData();
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+
+    // Auto-expand dropdowns that contain the active path
+    if (pathname && navigationData) {
+      const shouldExpand: string[] = [];
+
+      navigationData.forEach((section) => {
+        section.items.forEach((item) => {
+          if (item.children) {
+            const hasActiveChild = item.children.some(
+              (child: any) =>
+                pathname === child.path || pathname.startsWith(child.path + "/")
+            );
+            if (hasActiveChild) {
+              shouldExpand.push(item.title);
+            }
+          }
+        });
+      });
+
+      setExpandedItems((prev) => {
+        const newExpanded = [...prev];
+        shouldExpand.forEach((item) => {
+          if (!newExpanded.includes(item)) {
+            newExpanded.push(item);
+          }
+        });
+        return newExpanded;
+      });
+    }
+  }, [pathname, navigationData]);
+
+  // Helper function to check if a path is active
+  const isActiveItem = (itemPath: string) => {
+    // Special case for dashboard - only highlight if exactly on dashboard page
+    if (itemPath === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+    return pathname === itemPath || pathname.startsWith(itemPath + "/");
+  };
+
+  // Helper function to check if a parent item has an active child
+  const hasActiveChild = (item: NavItem) => {
+    if (!item.children) return false;
+    return item.children.some((child) => isActiveItem(child.path));
+  };
 
   // Icon mapping for navigation items
   const getIcon = (title: string) => {
@@ -180,8 +225,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 {[1, 2, 3, 4, 5].map((i) => (
                   <div
                     key={i}
-                    className="h-10 bg-gray-200 rounded animate-pulse"
-                  ></div>
+                    className="flex items-center justify-between px-2 py-2 rounded-md"
+                  >
+                    <div className="flex items-center flex-1">
+                      <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="ml-3 h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                    </div>
+                    <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+                  </div>
                 ))}
               </nav>
             </div>
@@ -244,6 +295,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               getIcon={getIcon}
               expandedItems={expandedItems}
               toggleExpanded={toggleExpanded}
+              pathname={pathname}
+              isActiveItem={isActiveItem}
+              hasActiveChild={hasActiveChild}
             />
           </div>
         </div>
@@ -256,6 +310,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           getIcon={getIcon}
           expandedItems={expandedItems}
           toggleExpanded={toggleExpanded}
+          pathname={pathname}
+          isActiveItem={isActiveItem}
+          hasActiveChild={hasActiveChild}
         />
       </div>
 
@@ -390,6 +447,9 @@ interface SidebarContentProps {
   getIcon: (title: string) => React.ReactNode;
   expandedItems: string[];
   toggleExpanded: (itemTitle: string) => void;
+  pathname: string;
+  isActiveItem: (path: string) => boolean;
+  hasActiveChild: (item: NavItem) => boolean;
 }
 
 const SidebarContent: React.FC<SidebarContentProps> = ({
@@ -397,10 +457,15 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   getIcon,
   expandedItems,
   toggleExpanded,
+  pathname,
+  isActiveItem,
+  hasActiveChild,
 }) => {
   const renderNavItem = (item: NavItem) => {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.includes(item.title);
+    const isActive = isActiveItem(item.path);
+    const hasActiveChildItem = hasActiveChild(item);
 
     if (hasChildren) {
       return (
@@ -436,7 +501,11 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
                 <a
                   key={child.title}
                   href={child.path}
-                  className="text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 group flex items-center px-2 py-2 text-sm rounded-md transition-colors capitalize"
+                  className={`group flex items-center px-2 py-2 text-sm rounded-md transition-colors capitalize ${
+                    isActiveItem(child.path)
+                      ? "bg-emerald-50 text-emerald-600"
+                      : "text-gray-600 hover:bg-emerald-50 hover:text-emerald-600"
+                  }`}
                 >
                   <span className="ml-3">{child.title}</span>
                 </a>
@@ -451,7 +520,11 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
       <a
         key={item.title}
         href={item.path}
-        className="text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors capitalize"
+        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors capitalize ${
+          isActive
+            ? "bg-emerald-50 text-emerald-600"
+            : "text-gray-700 hover:bg-emerald-50 hover:text-emerald-600"
+        }`}
       >
         {getIcon(item.title)}
         <span className="ml-3">{item.title}</span>

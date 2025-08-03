@@ -31,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permissions' => Permission::class,
         ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions) {
 
         // Handle custom BadRequestError (from AuthService)

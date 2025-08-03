@@ -6,6 +6,7 @@ const { BACKEND_URL } = app;
 
 // Get User
 const getUser = async (user: string): Promise<any> => {
+  console.log(user);
   const response: AxiosResponse<any> = await api.get(
     `${BACKEND_URL}/users/${user}`
   );
@@ -30,14 +31,9 @@ const createUser = async (payload: any): Promise<any> => {
 
 // Update User
 const updateUser = async (id: string, payload: any): Promise<any> => {
-  const response: AxiosResponse<any> = await api.post(
+  const response: AxiosResponse<any> = await api.put(
     `${BACKEND_URL}/users/${id}`,
-    payload,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    payload
   );
   return response.data.data;
 };

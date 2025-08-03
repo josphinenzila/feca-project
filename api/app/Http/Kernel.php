@@ -8,8 +8,9 @@ class Kernel extends HttpKernel
 {
     protected $middlewareGroups = [
         'api' => [
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \Illuminate\Http\Middleware\HandleCors::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+
         ],
     ];
 }

@@ -54,10 +54,10 @@ class UserService
 
     public function createUser(Request $request): mixed
     {
-        dd($request);
-        $user = $this->repository->create([
+
+        $user = $this->repository->create(
             $request->validated(),
-        ]);
+        );
 
         return $this->presenter->present($user);
     }

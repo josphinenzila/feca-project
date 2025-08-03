@@ -1,16 +1,11 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Inter } from "next/font/google";
+import { SnackbarProvider } from "notistack";
 import "./globals.css";
 
 import { ReduxProvider } from "@/redux/providers";
-
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "FECA - Forum for Empowerment and Community Awareness",
-  description:
-    "Building peaceful and empowered communities through civic action, democratic innovation, and sustainable development.",
-};
 
 export default function RootLayout({
   children,
@@ -20,7 +15,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning className={inter.className}>
-        <ReduxProvider>{children}</ReduxProvider>
+        <SnackbarProvider
+          maxSnack={3}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          {" "}
+          <ReduxProvider>{children}</ReduxProvider>
+        </SnackbarProvider>
       </body>
     </html>
   );
