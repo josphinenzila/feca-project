@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { getUser } from "@/redux/actions/userActions";
-import { selectUser } from "@/redux/selectors/auth";
 import { Button } from "@/components/landing/ui/Button";
 import { Card } from "@/components/landing/ui/Card";
 import {
@@ -14,8 +13,6 @@ import {
   Shield,
   CheckCircle,
   XCircle,
-  Edit,
-  Trash2,
   Calendar,
 } from "lucide-react";
 import { paths } from "@/routes/paths";
@@ -24,16 +21,35 @@ interface UserViewPageProps {
   id: string;
 }
 
+interface RootState {
+  user: {
+    userData: UserData | null; // or define a proper user type
+    loading: boolean;
+    error: string | null;
+  };
+}
+interface UserData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber?: string;
+  roleName?: string;
+  active: boolean;
+  createdAt?: string;
+}
+
 const UserViewPage = ({ id }: UserViewPageProps) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const { userData, loading, error } = useSelector((state: any) => state.user);
-  const { user } = useSelector(selectUser) || {};
+  const { userData, loading, error } = useSelector(
+    (state: RootState) => state.user
+  );
 
   useEffect(() => {
     if (id) {
-      // @ts-ignore
+      // @ts-expect-error - Redux Toolkit dispatch typing issue with async thunks
       dispatch(getUser(parseInt(id)));
     }
   }, [dispatch, id]);
@@ -92,7 +108,7 @@ const UserViewPage = ({ id }: UserViewPageProps) => {
             User Not Found
           </h2>
           <p className="text-gray-600 mb-4">
-            The user you're looking for doesn't exist.
+            The user you&apos;re looking for doesn&apos;t exist.
           </p>
           <Button onClick={handleBack}>Go Back</Button>
         </Card>

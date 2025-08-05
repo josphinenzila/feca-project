@@ -10,12 +10,32 @@ import { login } from "@/redux/actions/authActions";
 import { ErrorAlert, FieldError } from "@/components/landing/ui/Form";
 import { getFieldError, getGeneralError } from "@/utils/errorUtils";
 
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  roleId: number;
+}
+
+interface AuthState {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+  success: boolean;
+}
+
+interface RootState {
+  auth: AuthState;
+}
+
 const LoginForm: React.FC = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
   const { user, loading, error, success } = useSelector(
-    (state: any) => state.auth
+    (state: RootState) => state.auth
   );
 
   const [formData, setFormData] = useState({
@@ -25,7 +45,6 @@ const LoginForm: React.FC = () => {
   const { email, password } = formData;
 
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoadingDashboard, setIsLoadingDashboard] = useState(false);
   const [returnTo, setReturnTo] = useState("/dashboard"); // Default to dashboard
 
   useEffect(() => {
@@ -60,46 +79,13 @@ const LoginForm: React.FC = () => {
       email,
     };
 
-    //@ts-ignore
+    // @ts-expect-error - Redux Toolkit dispatch typing issue with async thunks
     dispatch(login(userData));
   };
 
   const generalError = getGeneralError(error);
   const emailError = getFieldError(error, "email");
   const passwordError = getFieldError(error, "password");
-
-  if (isLoadingDashboard) {
-    return (
-      <div className="flex h-screen w-screen flex-col bg-gray-50 p-4">
-        <div className="flex flex-1">
-          {/* Sidebar Skeleton */}
-          <div className="hidden lg:block w-20 bg-gray-200 animate-pulse h-full p-4 space-y-4">
-            <div className="h-8 w-full bg-gray-300 rounded"></div>
-            <div className="h-6 w-3/4 bg-gray-300 rounded"></div>
-            <div className="h-6 w-2/3 bg-gray-300 rounded"></div>
-            <div className="h-6 w-1/2 bg-gray-300 rounded"></div>
-            <div className="h-6 w-3/4 bg-gray-300 rounded"></div>
-            <div className="h-6 w-2/3 bg-gray-300 rounded"></div>
-          </div>
-
-          {/* Main Content Skeleton */}
-          <div className="flex-1 bg-gray-100 p-6 space-y-4">
-            <div className="h-8 w-3/4 bg-gray-300 animate-pulse rounded"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="h-40 bg-gray-300 animate-pulse rounded"></div>
-              <div className="h-40 bg-gray-300 animate-pulse rounded"></div>
-              <div className="h-40 bg-gray-300 animate-pulse rounded"></div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="h-40 bg-gray-300 animate-pulse rounded"></div>
-              <div className="h-40 bg-gray-300 animate-pulse rounded"></div>
-            </div>
-            <div className="h-40 bg-gray-300 animate-pulse rounded"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-blue-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -302,7 +288,7 @@ const LoginForm: React.FC = () => {
 
           <div className="text-center">
             <span className="text-sm text-gray-600">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/register"
                 className="font-medium text-emerald-600 hover:text-emerald-500"

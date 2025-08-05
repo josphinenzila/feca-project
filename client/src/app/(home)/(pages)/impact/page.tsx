@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 
 import Header from "@/components/landing/layout/Header";
 import Footer from "@/components/landing/sections/Footer";
@@ -636,7 +637,7 @@ const ImpactPage: React.FC = () => {
 
               <div className="bg-emerald-50 p-6 border-l-4 border-emerald-500">
                 <blockquote className="text-lg italic text-gray-700 mb-4">
-                  "{currentStory.testimonial.quote}"
+                  &ldquo;{currentStory.testimonial.quote}&rdquo;
                 </blockquote>
                 <div className="font-semibold text-gray-900">
                   {currentStory.testimonial.author}
@@ -648,9 +649,11 @@ const ImpactPage: React.FC = () => {
             </div>
 
             <div className="relative">
-              <img
+              <Image
                 src={currentStory.image}
                 alt={currentStory.title}
+                width={1000}
+                height={384}
                 className="w-full h-96 object-cover shadow-2xl"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 to-transparent"></div>

@@ -22,16 +22,6 @@ interface Role {
   description?: string;
 }
 
-interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  roleId: number;
-  role?: Role;
-}
-
 interface UpdateUserFormData {
   firstName: string;
   lastName: string;
@@ -43,6 +33,34 @@ interface UserViewPageProps {
   id: string;
 }
 
+interface UserError {
+  message: string;
+  field?: string;
+}
+
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  roleId: number;
+  role?: {
+    id: number;
+    name: string;
+  };
+}
+
+interface RootState {
+  user: {
+    loading: boolean;
+    error: UserError; // or define a proper error type
+    success: boolean;
+    userData: User; // or define a proper user type
+    updated: boolean;
+  };
+}
+
 export default function EditUserPage({ id }: UserViewPageProps) {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -52,7 +70,7 @@ export default function EditUserPage({ id }: UserViewPageProps) {
   const [loadingRoles, setLoadingRoles] = useState(true);
 
   const { loading, error, success, userData, updated } = useSelector(
-    (state: any) => state.user
+    (state: RootState) => state.user
   );
 
   useEffect(() => {
@@ -72,7 +90,7 @@ export default function EditUserPage({ id }: UserViewPageProps) {
 
   useEffect(() => {
     if (id) {
-      // @ts-ignore
+      // @ts-expect-error - Redux Toolkit dispatch typing issue with async thunks
       dispatch(getUser(parseInt(id)));
     }
   }, [dispatch, id]);
@@ -99,7 +117,9 @@ export default function EditUserPage({ id }: UserViewPageProps) {
 
   const { firstName, lastName, email, phoneNumber, roleId } = formData;
 
-  const handleChange = (e: any) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
@@ -107,7 +127,7 @@ export default function EditUserPage({ id }: UserViewPageProps) {
     }));
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const payload = {
@@ -119,7 +139,7 @@ export default function EditUserPage({ id }: UserViewPageProps) {
       roleId: Number(roleId),
     };
 
-    //@ts-ignore
+    //@ts-expect-error - Redux Toolkit dispatch typing issue with async thunks
     dispatch(updateUser({ id, payload }));
   };
 
@@ -134,14 +154,14 @@ export default function EditUserPage({ id }: UserViewPageProps) {
     }
 
     dispatch(reset());
-  }, [success, error, userData, enqueueSnackbar, router]);
+  }, [success, error, userData, updated, enqueueSnackbar, router, dispatch]);
 
   useEffect(() => {
     return () => {
       // Reset Redux state when the component unmounts
       dispatch(reset());
     };
-  }, []);
+  }, [dispatch]);
 
   const handleCancel = () => {
     router.push(paths.dashboard.users.root);

@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import Image from "next/image";
 
 import Header from "@/components/landing/layout/Header";
 import Footer from "@/components/landing/sections/Footer";
@@ -119,9 +120,11 @@ const PascorPage: React.FC = () => {
             </div>
 
             <div className="relative">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
                 alt="Community environmental work"
+                width={1000}
+                height={384}
                 className="w-full h-96 object-cover shadow-2xl rounded-lg"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-green-900/40 to-transparent rounded-lg"></div>
@@ -329,11 +332,14 @@ const PascorPage: React.FC = () => {
                 key={index}
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
-                <img
+                <Image
                   src={project.image}
                   alt={project.title}
+                  width={2340}
+                  height={192}
                   className="w-full h-48 object-cover"
                 />
+
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-gray-900 mb-3">
                     {project.title}
@@ -455,9 +461,10 @@ const PascorPage: React.FC = () => {
 
                 <div className="bg-white p-6 rounded-lg border-l-4 border-green-500">
                   <blockquote className="text-lg italic text-gray-700 mb-4">
-                    "FECA didn't just bring peace to our community; they taught
-                    us how to maintain it ourselves. Today, our children play
-                    together regardless of their ethnic background."
+                    &ldquo;FECA didn&apos;t just give us money; they gave us the
+                    knowledge and confidence to build our own businesses. Now I
+                    employ 8 other women and we&apos;re expanding to neighboring
+                    counties.&rdquo;
                   </blockquote>
                   <div className="font-semibold text-gray-900">
                     Mary Wanjiku

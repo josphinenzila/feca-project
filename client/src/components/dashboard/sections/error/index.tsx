@@ -12,12 +12,6 @@ const Dashboard403Page = () => {
     window.history.back();
   };
 
-  const handleContactAdmin = () => {
-    // Replace with your admin contact method
-    window.location.href =
-      "mailto:admin@company.com?subject=Access Request - Dashboard";
-  };
-
   const handleViewProfile = () => {
     // Replace with your profile route
     window.location.href = "/profile";
@@ -55,7 +49,7 @@ const Dashboard403Page = () => {
             </svg>
           </div>
           <h2 className="text-xl font-semibold text-gray-800 mb-2">
-            You don't have permission to access this page
+            You don&apos;t have permission to access this page
           </h2>
           <p className="text-gray-600 max-w-md mx-auto">
             This dashboard section is restricted to users with specific roles or
@@ -86,8 +80,8 @@ const Dashboard403Page = () => {
               </h3>
               <p className="text-sm text-blue-700">
                 Contact your administrator to request the necessary permissions
-                for your account. Include the page you're trying to access and
-                your business justification.
+                for your account. Include the page you&apos;re trying to access
+                and your business justification.
               </p>
             </div>
           </div>

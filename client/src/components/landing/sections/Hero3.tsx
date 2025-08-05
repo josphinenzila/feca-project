@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 
 const LandingPageHero: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -202,10 +203,12 @@ const LandingPageHero: React.FC = () => {
               {/* Main Image Container */}
               <div className="relative overflow-hidden shadow-2xl transform group-hover:scale-105 transition-transform duration-700">
                 {backgroundImages.map((image, index) => (
-                  <img
+                  <Image
                     key={index}
                     src={image}
                     alt={`Community work ${index + 1}`}
+                    width={1000}
+                    height={600}
                     className={`w-full h-80 lg:h-96 object-cover transition-opacity duration-1000 ${
                       index === currentImageIndex
                         ? "opacity-100"

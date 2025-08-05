@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 
 const Gallery: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -121,7 +122,7 @@ const Gallery: React.FC = () => {
             Our Work in <span className="text-emerald-600">Action</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover the impact we're making across communities in Kenya
+            Discover the impact we&apos;re making across communities in Kenya
           </p>
         </div>
 
@@ -135,9 +136,11 @@ const Gallery: React.FC = () => {
               onClick={() => setSelectedImage(item.image)}
             >
               {/* Image */}
-              <img
+              <Image
                 src={item.image}
                 alt={item.title}
+                width={2340}
+                height={2340}
                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
               />
 
@@ -324,9 +327,11 @@ const Gallery: React.FC = () => {
             </button>
 
             {/* Full Size Image */}
-            <img
+            <Image
               src={selectedImage}
               alt="Gallery image"
+              width={2340}
+              height={1560}
               className="w-full h-full object-contain shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />

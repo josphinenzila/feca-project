@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 
 import Header from "@/components/landing/layout/Header";
 import Footer from "@/components/landing/sections/Footer";
@@ -280,7 +280,7 @@ const TestimonialsPage: React.FC = () => {
       category: "youth",
       type: "audio",
       content:
-        "Before FECA's Civic Labs program, I had no idea how local government worked or how I could make my voice heard. Now I'm leading budget tracking initiatives in Mathare and teaching other young people about their civic rights.",
+        "Before FECA&apos;s Civic Labs program, I had no idea how local government worked or how I could make my voice heard. Now I&apos;m leading budget tracking initiatives in Mathare and teaching other young people about their civic rights.",
       audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
       duration: "3:20",
       impact: "Trained 200+ youth in digital advocacy",
@@ -295,7 +295,7 @@ const TestimonialsPage: React.FC = () => {
       category: "women",
       type: "video",
       content:
-        "FECA's Future Work Academy changed my life completely. I went from selling fish by the roadside to running a thriving fish processing business with 15 employees. They didn't just give us money - they gave us knowledge and confidence.",
+        "FECA&apos;s Future Work Academy changed my life completely. I went from selling fish by the roadside to running a thriving fish processing business with 15 employees. They didn&apos;t just give us money - they gave us knowledge and confidence.",
       videoUrl:
         "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
       thumbnail:
@@ -313,7 +313,7 @@ const TestimonialsPage: React.FC = () => {
       category: "government",
       type: "audio",
       content:
-        "FECA has been an invaluable partner in our county's development initiatives. Their evidence-based approach and community engagement methods have significantly improved our project success rates and citizen satisfaction.",
+        "FECA has been an invaluable partner in our county&apos;s development initiatives. Their evidence-based approach and community engagement methods have significantly improved our project success rates and citizen satisfaction.",
       audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
       duration: "2:50",
       impact: "40% improvement in project delivery",
@@ -328,7 +328,7 @@ const TestimonialsPage: React.FC = () => {
       category: "community",
       type: "video",
       content:
-        "As a trained mediator through FECA's program, I've helped resolve over 50 conflicts in our community. The skills I learned have not only made me a better leader but have also brought lasting peace to areas that were once hotspots of violence.",
+        "As a trained mediator through FECA&apos;s program, I&apos;ve helped resolve over 50 conflicts in our community. The skills I learned have not only made me a better leader but have also brought lasting peace to areas that were once hotspots of violence.",
       videoUrl:
         "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
       thumbnail:
@@ -346,7 +346,7 @@ const TestimonialsPage: React.FC = () => {
       category: "youth",
       type: "audio",
       content:
-        "Thanks to FECA's digital literacy program, I now work as a freelance web developer earning more than I ever imagined possible. They opened my eyes to opportunities in the digital economy that I never knew existed.",
+        "Thanks to FECA&apos;s digital literacy program, I now work as a freelance web developer earning more than I ever imagined possible. They opened my eyes to opportunities in the digital economy that I never knew existed.",
       audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
       duration: "2:30",
       impact: "500% increase in earning potential",
@@ -361,7 +361,7 @@ const TestimonialsPage: React.FC = () => {
       category: "government",
       type: "video",
       content:
-        "FECA's constitutional literacy campaigns have empowered citizens in my constituency to engage more meaningfully with governance processes. Their work is essential for strengthening Kenya's democracy.",
+        "FECA&apos;s constitutional literacy campaigns have empowered citizens in my constituency to engage more meaningfully with governance processes. Their work is essential for strengthening Kenya&apos;s democracy.",
       videoUrl:
         "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
       thumbnail:
@@ -373,13 +373,13 @@ const TestimonialsPage: React.FC = () => {
     {
       id: 8,
       name: "Rebecca Muthoni",
-      role: "Women's Group Leader",
+      role: "Women&apos;s Group Leader",
       location: "Nyeri County",
       program: "IEFRP",
       category: "women",
       type: "audio",
       content:
-        "Our women's cooperative has grown from 20 to 200 members thanks to FECA's support. We now operate a successful savings and loan scheme that has helped dozens of women start their own businesses.",
+        "Our women&apos;s cooperative has grown from 20 to 200 members thanks to FECA&apos;s support. We now operate a successful savings and loan scheme that has helped dozens of women start their own businesses.",
       audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
       duration: "4:00",
       impact: "1000% growth in membership",
@@ -462,8 +462,8 @@ const TestimonialsPage: React.FC = () => {
           </h1>
           <p className="text-xl text-blue-100 max-w-4xl mx-auto leading-relaxed mb-8">
             Real voices sharing authentic stories of transformation, growth, and
-            hope. Listen to and watch firsthand accounts of FECA's impact across
-            Kenya.
+            hope. Listen to and watch firsthand accounts of FECA&apos;s impact
+            across Kenya.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -627,7 +627,7 @@ const TestimonialsPage: React.FC = () => {
                   </div>
 
                   <blockquote className="text-gray-600 leading-relaxed mb-4 italic">
-                    "{testimonial.content}"
+                    &ldquo;{testimonial.content}&rdquo;
                   </blockquote>
 
                   <div className="space-y-2 text-sm">
@@ -714,7 +714,7 @@ const TestimonialsPage: React.FC = () => {
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               These voices represent thousands of community members whose lives
-              have been transformed through FECA's programs
+              have been transformed through FECA&apos;s programs
             </p>
           </div>
 
@@ -767,8 +767,9 @@ const TestimonialsPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-6">Share Your FECA Story</h2>
           <p className="text-xl mb-8 max-w-3xl mx-auto">
-            Have you been impacted by FECA's work? We'd love to hear your story
-            and share it with others who might benefit from our programs.
+            Have you been impacted by FECA&apos;s work? We&apos;d love to hear
+            your story and share it with others who might benefit from our
+            programs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -842,8 +843,8 @@ const TestimonialsPage: React.FC = () => {
               How to <span className="text-emerald-600">Submit</span> Your Story
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Follow these simple steps to share your experience with FECA's
-              programs
+              Follow these simple steps to share your experience with
+              FECA&apos;s programs
             </p>
           </div>
 
@@ -856,7 +857,7 @@ const TestimonialsPage: React.FC = () => {
                 Choose Your Format
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Select whether you'd like to share a video testimonial (2-5
+                Select whether you&apos;d like to share a video testimonial (2-5
                 minutes), audio recording (2-4 minutes), or written story
                 (200-500 words).
               </p>
@@ -870,9 +871,9 @@ const TestimonialsPage: React.FC = () => {
                 Tell Your Story
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Share how FECA's programs impacted your life, your community, or
-                your work. Be authentic and specific about the changes you've
-                experienced.
+                Share how FECA&apos;s programs impacted your life, your
+                community, or your work. Be authentic and specific about the
+                changes you&apos;ve experienced.
               </p>
             </div>
 
@@ -924,7 +925,8 @@ const TestimonialsPage: React.FC = () => {
                   </li>
                   <li className="flex items-start">
                     <span className="w-2 h-2 bg-emerald-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    Be specific about the impact and changes you've experienced
+                    Be specific about the impact and changes you&apos;ve
+                    experienced
                   </li>
                   <li className="flex items-start">
                     <span className="w-2 h-2 bg-emerald-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>

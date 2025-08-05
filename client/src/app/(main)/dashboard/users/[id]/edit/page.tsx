@@ -2,7 +2,11 @@ import EditUserPage from "@/components/dashboard/sections/users/edit";
 
 // ----------------------------------------------------------------------
 
-export default async function UserPageEdit({ params }: any) {
+interface UserPageEditProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function UserPageEdit({ params }: UserPageEditProps) {
   const { id } = await params;
   return <EditUserPage id={id} />;
 }

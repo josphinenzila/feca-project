@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import Image from "next/image";
 
 import Header from "@/components/landing/layout/Header";
 import Footer from "@/components/landing/sections/Footer";
@@ -119,9 +120,11 @@ const IefrpPage: React.FC = () => {
             </div>
 
             <div className="relative">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
                 alt="Economic empowerment training"
+                width={1000}
+                height={384}
                 className="w-full h-96 object-cover shadow-2xl rounded-lg"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-orange-900/40 to-transparent rounded-lg"></div>
@@ -329,9 +332,11 @@ const IefrpPage: React.FC = () => {
                 key={index}
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
-                <img
+                <Image
                   src={project.image}
                   alt={project.title}
+                  width={1000}
+                  height={192}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-6">
@@ -380,7 +385,7 @@ const IefrpPage: React.FC = () => {
               Success <span className="text-orange-600">Story</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Women's economic transformation in Kisumu County
+              Women&apos;s economic transformation in Kisumu County
             </p>
           </div>
 
@@ -388,7 +393,7 @@ const IefrpPage: React.FC = () => {
             <div className="grid lg:grid-cols-2 gap-12">
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Women's Economic Revolution
+                  Women&apos;s Economic Revolution
                 </h3>
                 <p className="text-orange-600 font-semibold mb-6">
                   Kisumu County - Lake Victoria Fishing Communities
@@ -410,7 +415,7 @@ const IefrpPage: React.FC = () => {
                       Solution:
                     </h4>
                     <p className="text-gray-600">
-                      IEFRP's Future Work Academy provided digital skills
+                      IEFRP&apos;s Future Work Academy provided digital skills
                       training, business development support, and access to
                       microfinance. Focus areas included fish value-addition,
                       mobile money services, and e-commerce platforms.
@@ -455,15 +460,16 @@ const IefrpPage: React.FC = () => {
 
                 <div className="bg-white p-6 rounded-lg border-l-4 border-orange-500">
                   <blockquote className="text-lg italic text-gray-700 mb-4">
-                    "FECA didn't just give us money; they gave us the knowledge
-                    and confidence to build our own businesses. Now I employ 8
-                    other women and we're expanding to neighboring counties."
+                    &ldquo;FECA didn&apos;t just give us money; they gave us the
+                    knowledge and confidence to build our own businesses. Now I
+                    employ 8 other women and we&apos;re expanding to neighboring
+                    counties.&rdquo;
                   </blockquote>
                   <div className="font-semibold text-gray-900">
                     Grace Akinyi
                   </div>
                   <div className="text-gray-600">
-                    Entrepreneur, Kisumu Women's Cooperative
+                    Entrepreneur, Kisumu Women&apos;s Cooperative
                   </div>
                 </div>
               </div>

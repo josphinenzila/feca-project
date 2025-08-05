@@ -11,7 +11,7 @@ export const checkAuthStatus = createAsyncThunk(
         return JSON.parse(storedUser);
       }
       return null;
-    } catch (error) {
+    } catch {
       return rejectWithValue("Failed to check auth status");
     }
   }

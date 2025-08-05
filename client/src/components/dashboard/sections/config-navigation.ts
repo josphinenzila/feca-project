@@ -4,12 +4,27 @@ import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/selectors/auth";
 import { hasPermission } from "@/utils";
 
+// Define proper types
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  permissions?: string[];
+  role?: {
+    permissions?: string[];
+  };
+}
+
+type Permission = string | string[];
+
 export function useNavData() {
   const { user } = useSelector(selectUser) || {};
 
   const checkPermission = useCallback(
-    (user: any, permissions: any) => hasPermission(user, permissions),
-    [user]
+    (user: User | null | undefined, permissions: Permission) =>
+      hasPermission(user, permissions),
+    [] // Remove unnecessary 'user' dependency
   );
 
   const data = useMemo(
@@ -45,7 +60,7 @@ export function useNavData() {
         ].filter(Boolean), // Filter out null or false items from the list
       },
     ],
-    [user]
+    [user, checkPermission] // Add missing checkPermission dependency
   );
 
   return data;

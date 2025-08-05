@@ -22,12 +22,22 @@ interface NavSection {
   items: NavItem[];
 }
 
+interface RootState {
+  auth: {
+    user: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+    } | null;
+  };
+}
+
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [isClient, setIsClient] = useState(false);
-  const { user } = useSelector((state: any) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const router = useRouter();
   const pathname = usePathname(); // Get current path
@@ -46,7 +56,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         section.items.forEach((item) => {
           if (item.children) {
             const hasActiveChild = item.children.some(
-              (child: any) =>
+              (child: NavItem) =>
                 pathname === child.path || pathname.startsWith(child.path + "/")
             );
             if (hasActiveChild) {
@@ -201,7 +211,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   };
 
   const handleLogout = async () => {
-    //@ts-ignore
+    //@ts-expect-error - Redux Toolkit dispatch typing issue with async thunks
     await dispatch(logout());
     await dispatch(reset());
     await router.push("/login");
@@ -295,7 +305,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               getIcon={getIcon}
               expandedItems={expandedItems}
               toggleExpanded={toggleExpanded}
-              pathname={pathname}
               isActiveItem={isActiveItem}
               hasActiveChild={hasActiveChild}
             />
@@ -310,7 +319,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           getIcon={getIcon}
           expandedItems={expandedItems}
           toggleExpanded={toggleExpanded}
-          pathname={pathname}
           isActiveItem={isActiveItem}
           hasActiveChild={hasActiveChild}
         />
@@ -447,7 +455,6 @@ interface SidebarContentProps {
   getIcon: (title: string) => React.ReactNode;
   expandedItems: string[];
   toggleExpanded: (itemTitle: string) => void;
-  pathname: string;
   isActiveItem: (path: string) => boolean;
   hasActiveChild: (item: NavItem) => boolean;
 }
@@ -457,15 +464,12 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   getIcon,
   expandedItems,
   toggleExpanded,
-  pathname,
   isActiveItem,
-  hasActiveChild,
 }) => {
   const renderNavItem = (item: NavItem) => {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.includes(item.title);
     const isActive = isActiveItem(item.path);
-    const hasActiveChildItem = hasActiveChild(item);
 
     if (hasChildren) {
       return (

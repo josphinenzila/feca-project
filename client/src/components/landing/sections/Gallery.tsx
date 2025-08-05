@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 
 const Gallery: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -118,9 +119,11 @@ const Gallery: React.FC = () => {
               onClick={() => setSelectedImage(item.image)}
             >
               <div className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
-                <img
+                <Image
                   src={item.image}
                   alt={item.alt}
+                  width={2340}
+                  height={200 + (index % 3) * 100}
                   className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                   style={{
                     height: `${200 + (index % 3) * 100}px`,
@@ -216,9 +219,11 @@ const Gallery: React.FC = () => {
             </button>
 
             {/* Full Size Image */}
-            <img
+            <Image
               src={selectedImage}
               alt="Gallery image"
+              width={2340}
+              height={1560}
               className="w-full h-full object-contain rounded-lg shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />

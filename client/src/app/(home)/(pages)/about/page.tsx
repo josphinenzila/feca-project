@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import Header from "@/components/landing/layout/Header";
 import Footer from "@/components/landing/sections/Footer";
 
@@ -282,9 +283,11 @@ const AboutPage: React.FC = () => {
               </div>
             </div>
             <div className="relative">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
                 alt="Community gathering"
+                width={1000}
+                height={384}
                 className="w-full h-96 object-cover shadow-2xl"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-600/40 to-transparent"></div>
@@ -314,7 +317,7 @@ const AboutPage: React.FC = () => {
                 <p>
                   Through innovation, climate action, and collaborative
                   leadership, FECA responds to the complex challenges facing
-                  today's youth and local communities. Our programs foster
+                  today&apos;s youth and local communities. Our programs foster
                   community cohesion, counter violent extremist ideologies, and
                   elevate local solutions for global impact.
                 </p>
@@ -473,7 +476,7 @@ const AboutPage: React.FC = () => {
                 Our Tagline
               </h3>
               <p className="text-2xl font-bold text-emerald-600 leading-relaxed">
-                "Peace. Participation. Progress."
+                &ldquo;Peace. Participation. Progress.&rdquo;
               </p>
             </div>
           </div>
@@ -676,9 +679,9 @@ const AboutPage: React.FC = () => {
             Partner With Us
           </h2>
           <p className="text-xl mb-8 max-w-3xl mx-auto">
-            Whether you're an individual, organization, or institution, there
-            are many ways to support our mission of building peaceful, empowered
-            communities. Join us in creating lasting change.
+            Whether you&apos;re an individual, organization, or institution,
+            there are many ways to support our mission of building peaceful,
+            empowered communities. Join us in creating lasting change.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="inline-flex items-center px-8 py-4 bg-white text-emerald-600 font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg">

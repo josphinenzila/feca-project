@@ -9,17 +9,28 @@ import { app } from "@/config";
 import Link from "next/link";
 import { getUser } from "@/redux/actions/userActions";
 const { BACKEND_URL } = app;
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import TableSkeleton from "./usersTableSkeleton";
+
+interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  active: boolean;
+  roleName: string;
+}
 
 export default function Users() {
   const dispatch = useDispatch();
   const router = useRouter();
   const [isLoading, setLoading] = useState(false);
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage] = useState(10);
   const [rowCount, setRowCount] = useState(0);
   const [isClient, setIsClient] = useState(false);
   const [deleteModal, setDeleteModal] = useState<{
@@ -43,7 +54,7 @@ export default function Users() {
     const getUsers = async () => {
       try {
         setLoading(true);
-        let url = `${BACKEND_URL}/users?page=${page}&perPage=${rowsPerPage}`;
+        const url = `${BACKEND_URL}/users?page=${page}&perPage=${rowsPerPage}`;
 
         const { data } = await api.get(url);
         setUsers(data.data);
@@ -59,13 +70,13 @@ export default function Users() {
   }, [page, rowsPerPage, isClient]);
 
   const handleView = (userId: number) => {
-    //@ts-ignore
+    //@ts-expect-error - Redux Toolkit dispatch typing issue with async thunks
     dispatch(getUser(userId));
     router.push(paths.dashboard.users.view(userId));
   };
 
   const handleEdit = (userId: number) => {
-    //@ts-ignore
+    //@ts-expect-error - Redux Toolkit dispatch typing issue with async thunks
     dispatch(getUser(userId));
     router.push(paths.dashboard.users.edit(userId));
   };

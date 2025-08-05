@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import Image from "next/image";
 
 import Header from "@/components/landing/layout/Header";
 import Footer from "@/components/landing/sections/Footer";
@@ -47,8 +48,6 @@ const Button: React.FC<
 };
 
 const CedipPage: React.FC = () => {
-  const [selectedTab, setSelectedTab] = useState("overview");
-
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -121,9 +120,11 @@ const CedipPage: React.FC = () => {
             </div>
 
             <div className="relative">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
                 alt="Youth civic engagement"
+                width={1000}
+                height={384}
                 className="w-full h-96 object-cover shadow-2xl rounded-lg"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent rounded-lg"></div>
@@ -331,9 +332,11 @@ const CedipPage: React.FC = () => {
                 key={index}
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
-                <img
+                <Image
                   src={project.image}
                   alt={project.title}
+                  width={1000}
+                  height={192}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-6">
@@ -382,8 +385,8 @@ const CedipPage: React.FC = () => {
               How to <span className="text-blue-600">Participate</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Multiple pathways to get involved in CEDIP's civic engagement and
-              democratic innovation work
+              Multiple pathways to get involved in CEDIP&apos;s civic engagement
+              and democratic innovation work
             </p>
           </div>
 

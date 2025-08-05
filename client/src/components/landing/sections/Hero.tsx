@@ -132,7 +132,7 @@ const HeroSlider = () => {
     return () => clearInterval(interval);
   }, [isAutoPlaying, slides.length]);
 
-  const goToSlide = (index: any) => {
+  const goToSlide = (index: number) => {
     setCurrentSlide(index);
     setIsAutoPlaying(false);
     setTimeout(() => setIsAutoPlaying(true), 10000); // Resume auto-play after 10 seconds

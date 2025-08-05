@@ -110,7 +110,7 @@ export const userSlice = createSlice({
       .addCase(bulkDelete.pending, (state) => {
         state.loading = true;
       })
-      .addCase(bulkDelete.fulfilled, (state, action) => {
+      .addCase(bulkDelete.fulfilled, (state) => {
         state.loading = false;
         state.deleted = true;
         state.success = true; // Optionally set a success flag

@@ -250,7 +250,7 @@ Effective Date: These Terms of Service are effective as of [Date] and were last 
             Terms of Service
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-6">
-            Please read these terms carefully before using FECA's website,
+            Please read these terms carefully before using FECA&apos;s website,
             participating in our programs, or engaging with our services.
           </p>
           <div className="text-sm text-gray-400">
@@ -269,8 +269,8 @@ Effective Date: These Terms of Service are effective as of [Date] and were last 
               Terms Summary
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Here's a quick overview of the key points. Please read the full
-              terms below for complete details.
+              Here&apos;s a quick overview of the key points. Please read the
+              full terms below for complete details.
             </p>
           </div>
 
@@ -413,7 +413,7 @@ Effective Date: These Terms of Service are effective as of [Date] and were last 
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               If you have any questions about these Terms of Service, please
-              don't hesitate to contact us.
+              don&apos;t hesitate to contact us.
             </p>
           </div>
 

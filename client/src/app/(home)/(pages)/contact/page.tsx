@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import Header from "@/components/landing/layout/Header";
 import Footer from "@/components/landing/sections/Footer";
 
@@ -64,7 +65,7 @@ const ContactPage: React.FC = () => {
       id: "general",
       title: "General Inquiry",
       description:
-        "Questions about FECA's work, programs, or general information",
+        "Questions about FECA&apos;s work, programs, or general information",
       icon: "💬",
       color: "emerald",
       contact: "info@feca4development.org",
@@ -141,7 +142,8 @@ const ContactPage: React.FC = () => {
       phone: "+254 701 234 567",
       email: "kisumu@feca4development.org",
       hours: "Monday - Friday: 8:00 AM - 5:00 PM",
-      description: "Economic empowerment programs and women's cooperatives",
+      description:
+        "Economic empowerment programs and women&apos;s cooperatives",
       coordinates: { lat: -0.0917, lng: 34.768 },
     },
   ];
@@ -217,7 +219,9 @@ const ContactPage: React.FC = () => {
     e.preventDefault();
     // Handle form submission here
     console.log("Form submitted:", formData);
-    alert("Thank you for your message! We'll get back to you within 24 hours.");
+    alert(
+      "Thank you for your message! We&apos;ll get back to you within 24 hours."
+    );
   };
 
   const selectedInquiryData = inquiryTypes.find(
@@ -256,13 +260,13 @@ const ContactPage: React.FC = () => {
             Contact Us
           </div>
           <h1 className="text-4xl lg:text-6xl font-bold mb-6">
-            Let's Work Together
+            Let&apos;s Work Together
             <span className="block text-emerald-300">for Change</span>
           </h1>
           <p className="text-xl text-blue-100 max-w-4xl mx-auto leading-relaxed mb-8">
-            Whether you're interested in joining our programs, forming
-            partnerships, or supporting our mission, we're here to connect and
-            collaborate for meaningful community transformation.
+            Whether you&apos;re interested in joining our programs, forming
+            partnerships, or supporting our mission, we&apos;re here to connect
+            and collaborate for meaningful community transformation.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -337,9 +341,8 @@ const ContactPage: React.FC = () => {
                       ? "text-blue-100"
                       : "text-gray-600"
                   }`}
-                >
-                  {type.description}
-                </p>
+                  dangerouslySetInnerHTML={{ __html: type.description }}
+                />
                 <div
                   className={`text-xs font-mono ${
                     selectedInquiry === type.id
@@ -366,8 +369,8 @@ const ContactPage: React.FC = () => {
                   Send Us a Message
                 </h2>
                 <p className="text-lg text-gray-600">
-                  Fill out the form below and we'll get back to you within 24
-                  hours during business days.
+                  Fill out the form below and we&apos;ll get back to you within
+                  24 hours during business days.
                 </p>
               </div>
 
@@ -522,8 +525,8 @@ const ContactPage: React.FC = () => {
                     htmlFor="newsletter"
                     className="ml-2 text-sm text-gray-600"
                   >
-                    Subscribe to our newsletter for updates on FECA's work and
-                    impact
+                    Subscribe to our newsletter for updates on FECA&apos;s work
+                    and impact
                   </label>
                 </div>
 
@@ -563,9 +566,12 @@ const ContactPage: React.FC = () => {
                       {selectedInquiryData.title}
                     </h3>
                   </div>
-                  <p className={`text-${selectedInquiryData.color}-700 mb-4`}>
-                    {selectedInquiryData.description}
-                  </p>
+                  <p
+                    className={`text-${selectedInquiryData.color}-700 mb-4`}
+                    dangerouslySetInnerHTML={{
+                      __html: selectedInquiryData.description,
+                    }}
+                  />
                   <div
                     className={`bg-${selectedInquiryData.color}-100 p-4 rounded-lg`}
                   >
@@ -711,9 +717,11 @@ const ContactPage: React.FC = () => {
                 key={index}
                 className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 text-center"
               >
-                <img
+                <Image
                   src={member.image}
                   alt={member.name}
+                  width={96}
+                  height={96}
                   className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
                 />
                 <h3 className="font-bold text-gray-900 mb-1">{member.name}</h3>
@@ -941,7 +949,7 @@ const ContactPage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {[
               {
-                question: "How can I join FECA's programs?",
+                question: "How can I join FECA&apos;s programs?",
                 answer:
                   "You can apply to join our programs by contacting us through the form above, calling our offices, or visiting our program centers. We conduct regular intake sessions for new participants.",
               },
@@ -953,7 +961,7 @@ const ContactPage: React.FC = () => {
               {
                 question: "How can my organization partner with FECA?",
                 answer:
-                  "We're always open to partnerships! Send us a partnership proposal through our contact form or email partnerships@feca4development.org with details about your organization and collaboration interests.",
+                  "We&apos;re always open to partnerships! Send us a partnership proposal through our contact form or email partnerships@feca4development.org with details about your organization and collaboration interests.",
               },
               {
                 question: "Where are your programs currently active?",
@@ -961,7 +969,7 @@ const ContactPage: React.FC = () => {
                   "FECA operates in 25+ communities across 15 counties in Kenya, with offices in Nairobi, Nakuru, and Kisumu. Contact us to see if we have programs in your area.",
               },
               {
-                question: "How can I support FECA's work financially?",
+                question: "How can I support FECA&apos;s work financially?",
                 answer:
                   "We accept donations from individuals, organizations, and institutions. Contact us for information about donation processes, project funding, or setting up recurring support.",
               },
@@ -972,8 +980,14 @@ const ContactPage: React.FC = () => {
               },
             ].map((faq, index) => (
               <div key={index} className="bg-white p-6 rounded-xl shadow-lg">
-                <h3 className="font-bold text-gray-900 mb-3">{faq.question}</h3>
-                <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                <h3
+                  className="font-bold text-gray-900 mb-3"
+                  dangerouslySetInnerHTML={{ __html: faq.question }}
+                ></h3>
+                <p
+                  className="text-gray-600 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: faq.answer }}
+                ></p>
               </div>
             ))}
           </div>

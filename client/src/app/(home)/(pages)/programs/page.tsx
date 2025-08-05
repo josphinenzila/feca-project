@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 
 import Header from "@/components/landing/layout/Header";
 import Footer from "@/components/landing/sections/Footer";
@@ -251,9 +252,9 @@ const ProgramsPage: React.FC = () => {
             <span className="block text-emerald-300">Strategic Programs</span>
           </h1>
           <p className="text-xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
-            FECA's three flagship programs address the interconnected challenges
-            facing Kenyan communities through civic engagement, peacebuilding,
-            and economic empowerment.
+            FECA&apos;s three flagship programs address the interconnected
+            challenges facing Kenyan communities through civic engagement,
+            peacebuilding, and economic empowerment.
           </p>
         </div>
       </section>
@@ -366,9 +367,11 @@ const ProgramsPage: React.FC = () => {
             </div>
 
             <div className="relative">
-              <img
+              <Image
                 src={currentProgram.image}
                 alt={currentProgram.title}
+                width={2340}
+                height={384}
                 className="w-full h-96 object-cover shadow-2xl"
               />
               <div

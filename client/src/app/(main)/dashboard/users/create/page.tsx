@@ -31,6 +31,30 @@ interface CreateUserFormData {
   roleId: number | "";
 }
 
+interface UserError {
+  message: string;
+  field?: string;
+}
+
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  roleId: number;
+}
+
+interface RootState {
+  user: {
+    loading: boolean;
+    error: UserError;
+    success: boolean;
+    userData: User; // or define a proper user type
+    created: boolean;
+  };
+}
+
 export default function CreateUser() {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -38,10 +62,9 @@ export default function CreateUser() {
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [loadingRoles, setLoadingRoles] = useState(true);
-  const [isClient, setIsClient] = useState(false);
 
   const { loading, error, success, userData, created } = useSelector(
-    (state: any) => state.user
+    (state: RootState) => state.user
   );
 
   const [formData, setFormData] = useState<CreateUserFormData>({
@@ -82,7 +105,9 @@ export default function CreateUser() {
     fetchRoles();
   }, []);
 
-  const handleChange = (e: any) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -101,7 +126,7 @@ export default function CreateUser() {
       password,
       roleId: Number(roleId),
     };
-    //@ts-ignore
+    //@ts-expect-error - Redux Toolkit dispatch typing issue with async thunks
     dispatch(createUser(userData));
   };
 

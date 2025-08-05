@@ -188,7 +188,7 @@ const HeroSlider: React.FC = () => {
                   className="flex transition-transform duration-700 ease-in-out"
                   style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                 >
-                  {slides.map((slide, index) => (
+                  {slides.map((slide) => (
                     <div key={slide.id} className="w-full flex-shrink-0">
                       <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
                         <div className="grid lg:grid-cols-2 min-h-[600px]">

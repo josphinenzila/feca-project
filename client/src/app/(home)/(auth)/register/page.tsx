@@ -12,11 +12,31 @@ import { reset } from "@/redux/slices/authSlice";
 import { ErrorAlert, FieldError } from "@/components/landing/ui/Form";
 import { getFieldError, getGeneralError } from "@/utils/errorUtils";
 
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  roleId: number;
+}
+
+interface AuthState {
+  userInfo: User | null;
+  loading: boolean;
+  error: string | null;
+  success: boolean;
+}
+
+interface RootState {
+  auth: AuthState;
+}
+
 const RegisterForm: React.FC = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { userInfo, loading, error, success } = useSelector(
-    (state: any) => state.auth
+    (state: RootState) => state.auth
   );
 
   const [formData, setFormData] = useState({
@@ -71,7 +91,7 @@ const RegisterForm: React.FC = () => {
       password,
       roleId: 3,
     };
-    //@ts-ignore
+    //@ts-expect-error - Redux Toolkit dispatch typing issue with async thunks
     dispatch(register(userData));
   };
 
