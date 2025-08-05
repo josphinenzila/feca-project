@@ -70,33 +70,67 @@ jobs:
           NEXT_PUBLIC_DOMAIN_URL=https://feca4development.org
           EOF
 
-      - name: Build and Export Next.js
+      - name: Build Next.js
         working-directory: ./client
         run: |
           npm run build
-          npx next export || echo "Static export not available, using build output"
+          npx next export || echo "Static export not available"
+
+      - name: Debug - Check build output
+        run: |
+          echo "=== Checking Next.js build output ==="
+          ls -la ./client/
+          echo "=== Checking for .next directory ==="
+          ls -la ./client/.next/ || echo "No .next directory"
+          echo "=== Checking for out directory ==="
+          ls -la ./client/out/ || echo "No out directory"
+          echo "=== Checking public directory ==="
+          ls -la ./client/public/ || echo "No public directory"
 
       - name: Create deployment package
         run: |
           mkdir -p deploy
 
-          # Copy Laravel API to /api subfolder
+          # Copy Laravel API to /api subfolder  
+          echo "Copying Laravel API..."
           rsync -av --exclude='node_modules' --exclude='.git' --exclude='tests' ./api/ deploy/api/
 
-          # Copy Next.js files to ROOT (will overwrite existing index.html)
+          # Copy Next.js files to ROOT with debugging
+          echo "Copying Next.js files to root..."
           if [ -d "./client/out" ]; then
             echo "Using static export from /out"
-            cp -r ./client/out/* deploy/
+            cp -rv ./client/out/* deploy/
+          elif [ -d "./client/.next" ]; then
+            echo "Using .next build output"
+            cp -rv ./client/.next deploy/
+            if [ -d "./client/public" ]; then
+              cp -rv ./client/public/* deploy/
+            fi
           else
-            echo "Using build output"
-            cp -r ./client/.next deploy/
-            cp -r ./client/public/* deploy/
+            echo "ERROR: No Next.js build output found!"
+            exit 1
           fi
 
-          # Copy package.json for reference
-          cp ./client/package.json deploy/ || true
+          # Add timestamp to verify upload
+          echo "Deployed at: $(date)" > deploy/deploy-timestamp.txt
 
-      - name: Deploy via SFTP
+          echo "=== Final deploy directory structure ==="
+          find deploy -type f | head -20
+
+      - name: Deploy via SFTP with overwrite
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          password: ${{ secrets.CPANEL_PASSWORD }}
+          port: ${{ secrets.CPANEL_PORT }}
+          local_path: "./deploy/*"
+          remote_path: "/public_html"
+          sftp_only: true
+          delete_remote_files: false
+
+      - name: Alternative - Try different SFTP action
+        if: failure()
         uses: Dylan700/sftp-upload-action@latest
         with:
           server: ${{ secrets.CPANEL_HOST }}
