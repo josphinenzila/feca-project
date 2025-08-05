@@ -400,5 +400,4 @@ const RegisterForm: React.FC = () => {
     </div>
   );
 };
-
 export default RegisterForm;
