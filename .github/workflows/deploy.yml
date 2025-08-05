@@ -116,24 +116,29 @@ jobs:
           cp ./client/.env.local deploy/client/
           cp ./client/next.config.js deploy/client/ || true
 
-          # Create production package
-          tar -czf deployment.tar.gz -C deploy .
-
-      # Deploy to cPanel via FTP
-      - name: Deploy to cPanel
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      # Deploy to cPanel via SFTP
+      - name: Deploy to cPanel via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ${{ secrets.CPANEL_HOST }}
           username: ${{ secrets.CPANEL_USERNAME }}
           password: ${{ secrets.CPANEL_PASSWORD }}
-          local-dir: ./deploy/
-          server-dir: /public_html/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/.env
-            **/tests/**
+          port: ${{ secrets.CPANEL_PORT }}
+          local_path: "./deploy/*"
+          remote_path: "/public_html/"
+          sftp_only: true
+
+      # Alternative: Use rsync for deployment
+      # - name: Deploy via rsync
+      #   uses: burnett01/rsync-deployments@6.0.0
+      #   with:
+      #     switches: -avzr --delete
+      #     path: ./deploy/
+      #     remote_path: /public_html/
+      #     remote_host: ${{ secrets.CPANEL_HOST }}
+      #     remote_user: ${{ secrets.CPANEL_USERNAME }}
+      #     remote_key: ${{ secrets.CPANEL_SSH_KEY }}
+      #     remote_port: ${{ secrets.CPANEL_PORT }}
 
       # Run Laravel post-deployment commands
       - name: Run Laravel commands via SSH
@@ -142,6 +147,7 @@ jobs:
           host: ${{ secrets.CPANEL_HOST }}
           username: ${{ secrets.CPANEL_USERNAME }}
           password: ${{ secrets.CPANEL_PASSWORD }}
+          port: ${{ secrets.CPANEL_PORT }}
           script: |
             cd public_html/api
             php artisan config:cache
@@ -156,6 +162,7 @@ jobs:
           host: ${{ secrets.CPANEL_HOST }}
           username: ${{ secrets.CPANEL_USERNAME }}
           password: ${{ secrets.CPANEL_PASSWORD }}
+          port: ${{ secrets.CPANEL_PORT }}
           script: |
             cd public_html/client
             npm install --production
