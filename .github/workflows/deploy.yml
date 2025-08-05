@@ -117,20 +117,7 @@ jobs:
           echo "=== Final deploy directory structure ==="
           find deploy -type f | head -20
 
-      - name: Deploy via SFTP with overwrite
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          server: ${{ secrets.CPANEL_HOST }}
-          username: ${{ secrets.CPANEL_USERNAME }}
-          password: ${{ secrets.CPANEL_PASSWORD }}
-          port: ${{ secrets.CPANEL_PORT }}
-          local_path: "./deploy/*"
-          remote_path: "/public_html"
-          sftp_only: true
-          delete_remote_files: false
-
-      - name: Alternative - Try different SFTP action
-        if: failure()
+      - name: Deploy via SFTP (Dylan700)
         uses: Dylan700/sftp-upload-action@latest
         with:
           server: ${{ secrets.CPANEL_HOST }}
@@ -140,3 +127,28 @@ jobs:
           uploads: |
             ./deploy/ => /public_html/
           delete: false
+
+      - name: Alternative - Use wlixcc if Dylan700 fails
+        if: failure()
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          password: ${{ secrets.CPANEL_PASSWORD }}
+          port: ${{ secrets.CPANEL_PORT }}
+          local_path: "./deploy/"
+          remote_path: "/public_html/"
+          sftp_only: true
+          delete_remote_files: false
+
+      - name: Final fallback - Use FTP
+        if: failure()
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          password: ${{ secrets.CPANEL_PASSWORD }}
+          protocol: sftp
+          port: ${{ secrets.CPANEL_PORT }}
+          local-dir: ./deploy/
+          server-dir: /public_html/
