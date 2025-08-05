@@ -70,17 +70,31 @@ jobs:
           NEXT_PUBLIC_DOMAIN_URL=https://feca4development.org
           EOF
 
-      - name: Build Next.js
+      - name: Build and Export Next.js
         working-directory: ./client
-        run: npm run build
+        run: |
+          npm run build
+          npx next export || echo "Static export not available, using build output"
 
       - name: Create deployment package
         run: |
-          mkdir -p deploy/api deploy/client
+          mkdir -p deploy
+
+          # Copy Laravel API to /api subfolder
           rsync -av --exclude='node_modules' --exclude='.git' --exclude='tests' ./api/ deploy/api/
-          cp -r ./client/.next deploy/client/
-          cp -r ./client/public deploy/client/
-          cp ./client/package.json deploy/client/
+
+          # Copy Next.js files to ROOT (will overwrite existing index.html)
+          if [ -d "./client/out" ]; then
+            echo "Using static export from /out"
+            cp -r ./client/out/* deploy/
+          else
+            echo "Using build output"
+            cp -r ./client/.next deploy/
+            cp -r ./client/public/* deploy/
+          fi
+
+          # Copy package.json for reference
+          cp ./client/package.json deploy/ || true
 
       - name: Deploy via SFTP
         uses: Dylan700/sftp-upload-action@latest
