@@ -34,7 +34,7 @@ jobs:
         run: |
           cat > .env << EOF
           APP_NAME=${{ secrets.LARAVEL_APP_NAME }}
-          APP_ENV=production
+          APP_ENV=production  
           APP_KEY=${{ secrets.LARAVEL_APP_KEY }}
           APP_DEBUG=false
           APP_URL=https://feca4development.org
@@ -44,10 +44,6 @@ jobs:
           DB_DATABASE=${{ secrets.DB_DATABASE }}
           DB_USERNAME=${{ secrets.DB_USERNAME }}
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          JWT_PUBLIC_KEY="${{ secrets.JWT_PUBLIC_KEY }}"
-          JWT_PRIVATE_KEY="${{ secrets.JWT_PRIVATE_KEY }}"
-          ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
-          ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
           EOF
 
       - name: Optimize Laravel
@@ -76,79 +72,62 @@ jobs:
           npm run build
           npx next export || echo "Static export not available"
 
-      - name: Debug - Check build output
+      - name: Create simple test files
         run: |
-          echo "=== Checking Next.js build output ==="
-          ls -la ./client/
-          echo "=== Checking for .next directory ==="
-          ls -la ./client/.next/ || echo "No .next directory"
-          echo "=== Checking for out directory ==="
-          ls -la ./client/out/ || echo "No out directory"
-          echo "=== Checking public directory ==="
-          ls -la ./client/public/ || echo "No public directory"
+          mkdir -p deploy
+          echo "<h1>GitHub Actions Deploy Test</h1><p>Deployed at: $(date)</p>" > deploy/test.html
+          echo "GitHub Actions Deploy Test - $(date)" > deploy/test.txt
 
       - name: Create deployment package
         run: |
-          mkdir -p deploy
-
-          # Copy Laravel API to /api subfolder  
-          echo "Copying Laravel API..."
+          # Copy Laravel API
           rsync -av --exclude='node_modules' --exclude='.git' --exclude='tests' ./api/ deploy/api/
 
-          # Copy Next.js files to ROOT with debugging
-          echo "Copying Next.js files to root..."
+          # Copy Next.js files to root
           if [ -d "./client/out" ]; then
-            echo "Using static export from /out"
-            cp -rv ./client/out/* deploy/
+            echo "Using static export"
+            cp -r ./client/out/* deploy/
           elif [ -d "./client/.next" ]; then
-            echo "Using .next build output"
-            cp -rv ./client/.next deploy/
-            if [ -d "./client/public" ]; then
-              cp -rv ./client/public/* deploy/
-            fi
-          else
-            echo "ERROR: No Next.js build output found!"
-            exit 1
+            echo "Using build output"
+            cp -r ./client/.next deploy/
+            cp -r ./client/public/* deploy/
           fi
 
-          # Add timestamp to verify upload
-          echo "Deployed at: $(date)" > deploy/deploy-timestamp.txt
+          echo "=== Files ready for upload ==="
+          ls -la deploy/
+          echo "=== Total files to upload ==="
+          find deploy -type f | wc -l
 
-          echo "=== Final deploy directory structure ==="
-          find deploy -type f | head -20
+      - name: Test SFTP connection first
+        run: |
+          echo "Testing SFTP connection..."
+          sshpass -p "${{ secrets.CPANEL_PASSWORD }}" sftp -o StrictHostKeyChecking=no -P ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} <<EOF
+          pwd
+          ls -la
+          quit
+          EOF
 
-      - name: Deploy via SFTP (Dylan700)
-        uses: Dylan700/sftp-upload-action@latest
-        with:
-          server: ${{ secrets.CPANEL_HOST }}
-          username: ${{ secrets.CPANEL_USERNAME }}
-          password: ${{ secrets.CPANEL_PASSWORD }}
-          port: ${{ secrets.CPANEL_PORT }}
-          uploads: |
-            ./deploy/ => /public_html/
-          delete: false
+      - name: Upload test files via SFTP
+        run: |
+          echo "Uploading test files..."
+          sshpass -p "${{ secrets.CPANEL_PASSWORD }}" sftp -o StrictHostKeyChecking=no -P ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} <<EOF
+          cd /public_html
+          put deploy/test.html
+          put deploy/test.txt
+          ls -la
+          quit
+          EOF
 
-      - name: Alternative - Use wlixcc if Dylan700 fails
-        if: failure()
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          server: ${{ secrets.CPANEL_HOST }}
-          username: ${{ secrets.CPANEL_USERNAME }}
-          password: ${{ secrets.CPANEL_PASSWORD }}
-          port: ${{ secrets.CPANEL_PORT }}
-          local_path: "./deploy/"
-          remote_path: "/public_html/"
-          sftp_only: true
-          delete_remote_files: false
+      - name: Upload all files via rsync over SSH
+        run: |
+          echo "Uploading all files via rsync..."
+          sshpass -p "${{ secrets.CPANEL_PASSWORD }}" rsync -avz -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.CPANEL_PORT }}" deploy/ ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }}:/public_html/
 
-      - name: Final fallback - Use FTP
-        if: failure()
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.CPANEL_HOST }}
-          username: ${{ secrets.CPANEL_USERNAME }}
-          password: ${{ secrets.CPANEL_PASSWORD }}
-          protocol: sftp
-          port: ${{ secrets.CPANEL_PORT }}
-          local-dir: ./deploy/
-          server-dir: /public_html/
+      - name: Verify upload via SFTP
+        run: |
+          echo "Verifying upload..."
+          sshpass -p "${{ secrets.CPANEL_PASSWORD }}" sftp -o StrictHostKeyChecking=no -P ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} <<EOF
+          cd /public_html
+          ls -la
+          quit
+          EOF
