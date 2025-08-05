@@ -34,7 +34,7 @@ jobs:
         run: |
           cat > .env << EOF
           APP_NAME=${{ secrets.LARAVEL_APP_NAME }}
-          APP_ENV=production  
+          APP_ENV=production
           APP_KEY=${{ secrets.LARAVEL_APP_KEY }}
           APP_DEBUG=false
           APP_URL=https://feca4development.org
@@ -44,6 +44,10 @@ jobs:
           DB_DATABASE=${{ secrets.DB_DATABASE }}
           DB_USERNAME=${{ secrets.DB_USERNAME }}
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          JWT_PUBLIC_KEY="${{ secrets.JWT_PUBLIC_KEY }}"
+          JWT_PRIVATE_KEY="${{ secrets.JWT_PRIVATE_KEY }}"
+          ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
           EOF
 
       - name: Optimize Laravel
@@ -72,62 +76,44 @@ jobs:
           npm run build
           npx next export || echo "Static export not available"
 
-      - name: Create simple test files
-        run: |
-          mkdir -p deploy
-          echo "<h1>GitHub Actions Deploy Test</h1><p>Deployed at: $(date)</p>" > deploy/test.html
-          echo "GitHub Actions Deploy Test - $(date)" > deploy/test.txt
-
       - name: Create deployment package
         run: |
-          # Copy Laravel API
+          mkdir -p deploy
+
+          # Copy Laravel API to api subfolder
           rsync -av --exclude='node_modules' --exclude='.git' --exclude='tests' ./api/ deploy/api/
 
           # Copy Next.js files to root
           if [ -d "./client/out" ]; then
-            echo "Using static export"
+            echo "Using static export from /out"
             cp -r ./client/out/* deploy/
           elif [ -d "./client/.next" ]; then
-            echo "Using build output"
+            echo "Using .next build output"
             cp -r ./client/.next deploy/
-            cp -r ./client/public/* deploy/
+            if [ -d "./client/public" ]; then
+              cp -r ./client/public/* deploy/
+            fi
           fi
 
-          echo "=== Files ready for upload ==="
-          ls -la deploy/
-          echo "=== Total files to upload ==="
-          find deploy -type f | wc -l
+          # Add deployment timestamp
+          echo "<h1>FECA Deployment Success</h1><p>Deployed at: $(date)</p>" > deploy/index.html
 
-      - name: Test SFTP connection first
+      - name: Upload files to correct directory
         run: |
-          echo "Testing SFTP connection..."
+          echo "Uploading files to public_html directory..."
           sshpass -p "${{ secrets.CPANEL_PASSWORD }}" sftp -o StrictHostKeyChecking=no -P ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} <<EOF
-          pwd
+          cd public_html
+          lcd deploy
+          put -r *
           ls -la
           quit
           EOF
 
-      - name: Upload test files via SFTP
+      - name: Verify deployment
         run: |
-          echo "Uploading test files..."
+          echo "Verifying deployment..."
           sshpass -p "${{ secrets.CPANEL_PASSWORD }}" sftp -o StrictHostKeyChecking=no -P ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} <<EOF
-          cd /public_html
-          put deploy/test.html
-          put deploy/test.txt
-          ls -la
-          quit
-          EOF
-
-      - name: Upload all files via rsync over SSH
-        run: |
-          echo "Uploading all files via rsync..."
-          sshpass -p "${{ secrets.CPANEL_PASSWORD }}" rsync -avz -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.CPANEL_PORT }}" deploy/ ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }}:/public_html/
-
-      - name: Verify upload via SFTP
-        run: |
-          echo "Verifying upload..."
-          sshpass -p "${{ secrets.CPANEL_PASSWORD }}" sftp -o StrictHostKeyChecking=no -P ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} <<EOF
-          cd /public_html
+          cd public_html
           ls -la
           quit
           EOF
