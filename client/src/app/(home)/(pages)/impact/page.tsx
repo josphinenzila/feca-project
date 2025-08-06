@@ -312,8 +312,8 @@ const ImpactPage: React.FC = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-emerald-600 via-blue-600 to-indigo-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/30"></div>
+      <section className="relative py-16 bg-gradient-to-br from-emerald-800 via-blue-900 to-indigo-900 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/50"></div>
         <div
           className="absolute inset-0"
           style={{
@@ -338,42 +338,21 @@ const ImpactPage: React.FC = () => {
             </svg>
             Our Impact
           </div>
-          <h1 className="text-4xl lg:text-6xl font-bold mb-6">
+          <h1 className="text-4xl lg:text-5xl font-bold mb-6">
             Transforming Lives,
-            <span className="block text-emerald-300">Building Futures</span>
+            <br />
+            <span className="text-emerald-300">Building Futures</span>
           </h1>
-          <p className="text-xl text-blue-100 max-w-4xl mx-auto leading-relaxed mb-8">
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed mb-6">
             Since 2019, FECA has created measurable, lasting change across Kenya
             through community-driven programs that address civic engagement,
             peacebuilding, and economic empowerment.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-white text-emerald-600 hover:bg-gray-50"
-            >
-              Download Impact Report
-              <svg
-                className="w-5 h-5 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"
-                />
-              </svg>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-emerald-600"
-            >
-              View All Stories
-            </Button>
+          <div className="text-sm text-blue-200">
+            <span className="font-semibold">Years of Impact:</span> 2019 -
+            Present |
+            <span className="font-semibold ml-2">Lives Transformed:</span>{" "}
+            10,000+ Across Kenya
           </div>
         </div>
       </section>

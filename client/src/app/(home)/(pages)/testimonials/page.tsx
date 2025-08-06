@@ -430,8 +430,8 @@ const TestimonialsPage: React.FC = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-emerald-600 via-blue-600 to-purple-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/30"></div>
+      <section className="relative py-16 bg-gradient-to-br from-emerald-800 via-blue-900 to-purple-900 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/50"></div>
         <div
           className="absolute inset-0"
           style={{
@@ -456,42 +456,20 @@ const TestimonialsPage: React.FC = () => {
             </svg>
             Community Voices
           </div>
-          <h1 className="text-4xl lg:text-6xl font-bold mb-6">
+          <h1 className="text-4xl lg:text-5xl font-bold mb-6">
             Hear from the
-            <span className="block text-emerald-300">Communities We Serve</span>
+            <br />
+            <span className="text-emerald-300">Communities We Serve</span>
           </h1>
-          <p className="text-xl text-blue-100 max-w-4xl mx-auto leading-relaxed mb-8">
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed mb-6">
             Real voices sharing authentic stories of transformation, growth, and
             hope. Listen to and watch firsthand accounts of FECA&apos;s impact
             across Kenya.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-white text-emerald-600 hover:bg-gray-50"
-            >
-              Share Your Story
-              <svg
-                className="w-5 h-5 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-emerald-600"
-            >
-              Download Stories Collection
-            </Button>
+          <div className="text-sm text-blue-200">
+            <span className="font-semibold">Stories Collected:</span> 200+ |
+            <span className="font-semibold ml-2">Communities Featured:</span>{" "}
+            50+ Across Kenya
           </div>
         </div>
       </section>

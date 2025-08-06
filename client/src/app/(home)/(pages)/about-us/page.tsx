@@ -208,8 +208,8 @@ const AboutPage: React.FC = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-emerald-600 via-emerald-700 to-blue-800 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/30"></div>
+      <section className="relative py-16 bg-gradient-to-br from-emerald-800 via-emerald-900 to-blue-900 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/50"></div>
         <div
           className="absolute inset-0"
           style={{
@@ -217,85 +217,41 @@ const AboutPage: React.FC = () => {
           }}
         ></div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold mb-6">
-                <svg
-                  className="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                About FECA
-              </div>
-              <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
-                Empowering Communities,
-                <br />
-                <span className="text-emerald-300">Building Peace</span>
-              </h1>
-              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-                Since 2019, the Forum for Empowerment and Community Awareness
-                has been at the forefront of grassroots transformation,
-                championing inclusive governance, digital democracy, and
-                sustainable development across Kenya.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button className="inline-flex items-center px-8 py-4 bg-white text-emerald-600 font-semibold hover:bg-gray-50 transition-colors shadow-lg">
-                  Our Impact Report
-                  <svg
-                    className="w-5 h-5 ml-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"
-                    />
-                  </svg>
-                </button>
-                <button className="inline-flex items-center px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-emerald-600 font-semibold transition-colors">
-                  Watch Our Story
-                  <svg
-                    className="w-5 h-5 ml-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div className="relative">
-              <Image
-                src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                alt="Community gathering"
-                width={1000}
-                height={384}
-                className="w-full h-96 object-cover shadow-2xl"
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold mb-6">
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-emerald-600/40 to-transparent"></div>
-            </div>
+            </svg>
+            About FECA
+          </div>
+          <h1 className="text-4xl lg:text-5xl font-bold mb-6">
+            Empowering Communities,
+            <br />
+            <span className="text-emerald-300">Building Peace</span>
+          </h1>
+          <p className="text-xl text-emerald-100 max-w-3xl mx-auto leading-relaxed mb-6">
+            Since 2019, the Forum for Empowerment and Community Awareness has
+            been at the forefront of grassroots transformation, championing
+            inclusive governance, digital democracy, and sustainable development
+            across Kenya.
+          </p>
+          <div className="text-sm text-emerald-200">
+            <span className="font-semibold">Established:</span> 2019 |
+            <span className="font-semibold ml-2">Headquarters:</span> Nairobi,
+            Kenya
           </div>
         </div>
       </section>
-
       {/* Organization Overview */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -221,8 +221,8 @@ const ProgramsPage: React.FC = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-emerald-600 via-blue-600 to-purple-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/30"></div>
+      <section className="relative py-16 bg-gradient-to-br from-emerald-800 via-blue-900 to-purple-900 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/50"></div>
         <div
           className="absolute inset-0"
           style={{
@@ -247,15 +247,21 @@ const ProgramsPage: React.FC = () => {
             </svg>
             Our Programs
           </div>
-          <h1 className="text-4xl lg:text-6xl font-bold mb-6">
+          <h1 className="text-4xl lg:text-5xl font-bold mb-6">
             Transforming Communities Through
-            <span className="block text-emerald-300">Strategic Programs</span>
+            <br />
+            <span className="text-emerald-300">Strategic Programs</span>
           </h1>
-          <p className="text-xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed mb-6">
             FECA&apos;s three flagship programs address the interconnected
             challenges facing Kenyan communities through civic engagement,
             peacebuilding, and economic empowerment.
           </p>
+          <div className="text-sm text-blue-200">
+            <span className="font-semibold">Program Areas:</span> 3 |
+            <span className="font-semibold ml-2">Communities Served:</span> 50+
+            Across Kenya
+          </div>
         </div>
       </section>
 

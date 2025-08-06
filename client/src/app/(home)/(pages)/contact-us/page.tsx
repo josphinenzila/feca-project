@@ -233,8 +233,8 @@ const ContactPage: React.FC = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-emerald-600 via-blue-600 to-indigo-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/30"></div>
+      <section className="relative py-16 bg-gradient-to-br from-emerald-800 via-blue-900 to-indigo-900 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/50"></div>
         <div
           className="absolute inset-0"
           style={{
@@ -259,46 +259,24 @@ const ContactPage: React.FC = () => {
             </svg>
             Contact Us
           </div>
-          <h1 className="text-4xl lg:text-6xl font-bold mb-6">
+          <h1 className="text-4xl lg:text-5xl font-bold mb-6">
             Let&apos;s Work Together
-            <span className="block text-emerald-300">for Change</span>
+            <br />
+            <span className="text-emerald-300">for Change</span>
           </h1>
-          <p className="text-xl text-blue-100 max-w-4xl mx-auto leading-relaxed mb-8">
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed mb-6">
             Whether you&apos;re interested in joining our programs, forming
             partnerships, or supporting our mission, we&apos;re here to connect
             and collaborate for meaningful community transformation.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-white text-emerald-600 hover:bg-gray-50"
-            >
-              Quick Contact Form
-              <svg
-                className="w-5 h-5 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-emerald-600"
-            >
-              Schedule a Meeting
-            </Button>
+          <div className="text-sm text-blue-200">
+            <span className="font-semibold">Office Hours:</span> Mon-Fri,
+            8AM-5PM EAT |
+            <span className="font-semibold ml-2">Response Time:</span> Within 24
+            Hours
           </div>
         </div>
       </section>
-
       {/* Quick Contact Options */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

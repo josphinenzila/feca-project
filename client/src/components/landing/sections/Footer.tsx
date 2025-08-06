@@ -188,16 +188,28 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex space-x-6">
               <Link
-                href="/privacy"
+                href="/privacy-policy"
                 className="text-sm text-gray-400 hover:text-emerald-400 transition-colors"
               >
                 Privacy Policy
               </Link>
               <Link
-                href="/terms"
+                href="/terms-of-service"
                 className="text-sm text-gray-400 hover:text-emerald-400 transition-colors"
               >
                 Terms of Service
+              </Link>
+              <Link
+                href="/code-of-conduct"
+                className="text-sm text-gray-400 hover:text-emerald-400 transition-colors"
+              >
+                Code of Conduct
+              </Link>
+              <Link
+                href="/cookie-policy"
+                className="text-sm text-gray-400 hover:text-emerald-400 transition-colors"
+              >
+                Cookie Policy
               </Link>
             </div>
           </div>

@@ -79,41 +79,23 @@ jobs:
       - name: Create deployment package
         run: |
           mkdir -p deploy
-
-          # Copy Laravel API to api subfolder
+          # Laravel API
           rsync -av --exclude='node_modules' --exclude='.git' --exclude='tests' ./api/ deploy/api/
-
-          # Copy Next.js files to root
+          # Next.js files to root (don't overwrite index.html)
           if [ -d "./client/out" ]; then
-            echo "Using static export from /out"
             cp -r ./client/out/* deploy/
           elif [ -d "./client/.next" ]; then
-            echo "Using .next build output"
             cp -r ./client/.next deploy/
-            if [ -d "./client/public" ]; then
-              cp -r ./client/public/* deploy/
-            fi
+            cp -r ./client/public/* deploy/
           fi
+          # Only add timestamp if no index.html exists
+          [ ! -f "deploy/index.html" ] && echo "<h1>FECA</h1><p>Next.js app loading...</p>" > deploy/index.html
 
-          # Add deployment timestamp
-          echo "<h1>FECA Deployment Success</h1><p>Deployed at: $(date)</p>" > deploy/index.html
-
-      - name: Upload files to correct directory
+      - name: Deploy via SFTP
         run: |
-          echo "Uploading files to public_html directory..."
           sshpass -p "${{ secrets.CPANEL_PASSWORD }}" sftp -o StrictHostKeyChecking=no -P ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} <<EOF
           cd public_html
           lcd deploy
           put -r *
-          ls -la
-          quit
-          EOF
-
-      - name: Verify deployment
-        run: |
-          echo "Verifying deployment..."
-          sshpass -p "${{ secrets.CPANEL_PASSWORD }}" sftp -o StrictHostKeyChecking=no -P ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} <<EOF
-          cd public_html
-          ls -la
           quit
           EOF

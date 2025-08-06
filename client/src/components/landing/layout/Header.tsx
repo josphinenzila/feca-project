@@ -9,11 +9,11 @@ const Header: React.FC = () => {
 
   const navigation = [
     { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
+    { name: "About", href: "/about-us" },
     { name: "Programs", href: "/programs" },
     { name: "Impact", href: "/impact" },
     { name: "Testimonials", href: "/testimonials" },
-    { name: "Contact", href: "/contact" },
+    { name: "Contact", href: "/contact-us" },
   ];
 
   return (
