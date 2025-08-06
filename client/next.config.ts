@@ -1,10 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
-  trailingSlash: true,
+  output: "standalone",
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: true, // For shared hosting compatibility
     remotePatterns: [
       {
         protocol: "https",

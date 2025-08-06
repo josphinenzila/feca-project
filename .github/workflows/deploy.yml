@@ -7,13 +7,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "18"
           cache: "npm"
@@ -40,96 +37,28 @@ jobs:
           ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
           EOF
 
-      - name: Install Next.js dependencies
-        working-directory: ./client
-        run: npm ci
-
-      - name: Create Next.js .env
+      - name: Build Next.js standalone
         working-directory: ./client
         run: |
-          cat > .env.local << EOF
+          cat > .env.production << EOF
           NEXT_PUBLIC_APP_ENV=production
           NEXT_PUBLIC_BACKEND_URL=https://feca4development.org/api
           NEXT_PUBLIC_DOMAIN_URL=https://feca4development.org
           EOF
-
-      - name: Build Next.js static export
-        working-directory: ./client
-        run: |
+          npm ci
           npm run build
-          echo "=== Checking build output ==="
-          ls -la out/
-
-      - name: Create security .htaccess files
-        run: |
-          # Root .htaccess for frontend routing and security
-          cat > root_htaccess << 'EOF'
-          # Security Headers
-          Header always set X-Content-Type-Options nosniff
-          Header always set X-Frame-Options DENY
-          Header always set X-XSS-Protection "1; mode=block"
-          Header always set Referrer-Policy strict-origin-when-cross-origin
-
-          # Disable directory browsing
-          Options -Indexes
-
-          # Hide sensitive files
-          <FilesMatch "^\.">
-              Require all denied
-          </FilesMatch>
-          <Files ~ "(\.env|composer\.json|composer\.lock|package\.json|\.git)">
-              Require all denied
-          </Files>
-
-          # Routing
-          RewriteEngine On
-          RewriteRule ^_next/(.*)$ _next/$1 [L]
-          RewriteRule ^api/(.*)$ api/public/index.php [L]
-          RewriteCond %{REQUEST_FILENAME} !-f
-          RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteRule ^(.*)$ index.html [L]
-          EOF
-
-          # API .htaccess
-          cat > api_htaccess << 'EOF'
-          Options -Indexes
-          Require all denied
-          <Directory "public">
-              Require all granted
-          </Directory>
-          <Files ~ "(\.env|composer\.json|artisan|\.git)">
-              Require all denied
-          </Files>
-          RewriteEngine On
-          RewriteRule ^(.*)$ public/index.php [L]
-          EOF
-
-          # API public .htaccess
-          cat > api_public_htaccess << 'EOF'
-          <IfModule mod_rewrite.c>
-              Options -MultiViews -Indexes
-              RewriteEngine On
-              RewriteCond %{HTTP:Authorization} .
-              RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-              RewriteCond %{REQUEST_FILENAME} !-d
-              RewriteCond %{REQUEST_URI} (.+)/$
-              RewriteRule ^ %1 [L,R=301]
-              RewriteCond %{REQUEST_FILENAME} !-d
-              RewriteCond %{REQUEST_FILENAME} !-f
-              RewriteRule ^ index.php [L]
-          </IfModule>
-          EOF
 
       - name: Create deployment package
         run: |
-          mkdir -p deploy
-          # Laravel API
-          rsync -av --exclude='node_modules' --exclude='.git' --exclude='tests' --exclude='vendor' ./api/ deploy/api/
-          cp api_htaccess deploy/api/.htaccess
-          cp api_public_htaccess deploy/api/public/.htaccess
-          # Next.js static files to root
-          cp -r ./client/out/* deploy/
-          cp root_htaccess deploy/.htaccess
+          mkdir deploy
+          # Laravel (no vendor)
+          rsync -av --exclude=vendor --exclude=node_modules --exclude=.git ./api/ deploy/api/
+          # Next.js standalone
+          mkdir deploy/app
+          cp -r ./client/.next/standalone/* deploy/app/
+          cp -r ./client/.next/static deploy/app/.next/
+          cp -r ./client/public deploy/app/
+          echo '{"scripts":{"start":"node server.js"}}' > deploy/app/package.json
 
       - name: Deploy via SFTP
         run: |
@@ -140,13 +69,12 @@ jobs:
           quit
           EOF
 
-      - name: Run Composer Install on cPanel
+      - name: Setup on server
         run: |
           sshpass -p "${{ secrets.CPANEL_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} << 'ENDSSH'
           cd public_html/api
-          composer install --no-dev --optimize-autoloader --no-interaction
+          composer install --no-dev --optimize-autoloader
           php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
-          chmod -R 755 storage bootstrap/cache
+          cd ../app
+          node --version || echo "Node.js not available"
           ENDSSH
