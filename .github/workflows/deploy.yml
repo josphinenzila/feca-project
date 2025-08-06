@@ -12,22 +12,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.2"
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, mysql, gd
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "18"
           cache: "npm"
           cache-dependency-path: client/package-lock.json
-
-      - name: Install Laravel dependencies
-        working-directory: ./api
-        run: composer install --optimize-autoloader --no-dev
 
       - name: Create Laravel .env
         working-directory: ./api
@@ -50,13 +40,6 @@ jobs:
           ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
           EOF
 
-      - name: Optimize Laravel
-        working-directory: ./api
-        run: |
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
-
       - name: Install Next.js dependencies
         working-directory: ./client
         run: npm ci
@@ -76,20 +59,121 @@ jobs:
           npm run build
           npx next export || echo "Static export not available"
 
+      - name: Create security .htaccess files
+        run: |
+          # Root .htaccess for frontend routing and security
+          cat > root_htaccess << 'EOF'
+          # Security Headers
+          Header always set X-Content-Type-Options nosniff
+          Header always set X-Frame-Options DENY
+          Header always set X-XSS-Protection "1; mode=block"
+          Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+          Header always set Referrer-Policy strict-origin-when-cross-origin
+
+          # Disable directory browsing
+          Options -Indexes
+
+          # Hide sensitive files and directories
+          <FilesMatch "^\.">
+              Require all denied
+          </FilesMatch>
+
+          # Protect sensitive files
+          <Files ~ "(\.env|composer\.json|composer\.lock|package\.json|package-lock\.json|\.git)">
+              Require all denied
+          </Files>
+
+          # Next.js routing - serve static files directly, fallback to index.html
+          RewriteEngine On
+
+          # Handle Next.js static assets
+          RewriteRule ^_next/(.*)$ _next/$1 [L]
+          RewriteRule ^api/(.*)$ api/public/index.php [L]
+
+          # Serve existing files and directories
+          RewriteCond %{REQUEST_FILENAME} -f [OR]
+          RewriteCond %{REQUEST_FILENAME} -d
+          RewriteRule ^.*$ - [S=40]
+
+          # Fallback to index.html for client-side routing
+          RewriteRule ^(.*)$ index.html [L]
+          EOF
+
+          # API .htaccess for Laravel
+          cat > api_htaccess << 'EOF'
+          # Disable directory browsing
+          Options -Indexes
+
+          # Hide all files by default
+          Require all denied
+
+          # Only allow access to public directory
+          <Directory "public">
+              Require all granted
+          </Directory>
+
+          # Protect sensitive files
+          <Files ~ "(\.env|composer\.json|composer\.lock|artisan|\.git)">
+              Require all denied
+          </Files>
+
+          # Redirect all requests to Laravel's public/index.php
+          RewriteEngine On
+          RewriteRule ^(.*)$ public/index.php [L]
+          EOF
+
+          # Public API .htaccess (inside Laravel public folder)
+          cat > api_public_htaccess << 'EOF'
+          <IfModule mod_rewrite.c>
+              <IfModule mod_negotiation.c>
+                  Options -MultiViews -Indexes
+              </IfModule>
+
+              RewriteEngine On
+
+              # Handle Authorization Header
+              RewriteCond %{HTTP:Authorization} .
+              RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+              # Redirect Trailing Slashes If Not A Folder...
+              RewriteCond %{REQUEST_FILENAME} !-d
+              RewriteCond %{REQUEST_URI} (.+)/$
+              RewriteRule ^ %1 [L,R=301]
+
+              # Send Requests To Front Controller...
+              RewriteCond %{REQUEST_FILENAME} !-d
+              RewriteCond %{REQUEST_FILENAME} !-f
+              RewriteRule ^ index.php [L]
+          </IfModule>
+          EOF
+
       - name: Create deployment package
         run: |
           mkdir -p deploy
-          # Laravel API
-          rsync -av --exclude='node_modules' --exclude='.git' --exclude='tests' ./api/ deploy/api/
-          # Next.js files to root (don't overwrite index.html)
+
+          # Laravel API (exclude vendor directory)
+          rsync -av --exclude='node_modules' --exclude='.git' --exclude='tests' --exclude='vendor' ./api/ deploy/api/
+
+          # Add API .htaccess files
+          cp api_htaccess deploy/api/.htaccess
+          cp api_public_htaccess deploy/api/public/.htaccess
+
+          # Next.js files to root
           if [ -d "./client/out" ]; then
             cp -r ./client/out/* deploy/
           elif [ -d "./client/.next" ]; then
             cp -r ./client/.next deploy/
             cp -r ./client/public/* deploy/
           fi
-          # Only add timestamp if no index.html exists
-          [ ! -f "deploy/index.html" ] && echo "<h1>FECA</h1><p>Next.js app loading...</p>" > deploy/index.html
+
+          # Add root .htaccess for frontend and security
+          cp root_htaccess deploy/.htaccess
+
+          # Only add fallback if no index.html exists
+          [ ! -f "deploy/index.html" ] && echo "<h1>FECA</h1><p>Loading...</p>" > deploy/index.html
+
+          echo "=== Security files created ==="
+          ls -la deploy/.htaccess deploy/api/.htaccess deploy/api/public/.htaccess
 
       - name: Deploy via SFTP
         run: |
@@ -99,3 +183,18 @@ jobs:
           put -r *
           quit
           EOF
+
+      - name: Run Composer Install on cPanel
+        run: |
+          sshpass -p "${{ secrets.CPANEL_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} << 'ENDSSH'
+          cd public_html/api
+          echo "Running composer install on server..."
+          composer install --no-dev --optimize-autoloader --no-interaction
+          echo "Running Laravel optimizations..."
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          echo "Setting proper permissions..."
+          chmod -R 755 storage bootstrap/cache
+          echo "Server-side setup complete!"
+          ENDSSH
