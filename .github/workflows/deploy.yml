@@ -53,11 +53,12 @@ jobs:
           NEXT_PUBLIC_DOMAIN_URL=https://feca4development.org
           EOF
 
-      - name: Build Next.js
+      - name: Build Next.js static export
         working-directory: ./client
         run: |
           npm run build
-          npx next export || echo "Static export not available"
+          echo "=== Checking build output ==="
+          ls -la out/
 
       - name: Create security .htaccess files
         run: |
@@ -67,80 +68,52 @@ jobs:
           Header always set X-Content-Type-Options nosniff
           Header always set X-Frame-Options DENY
           Header always set X-XSS-Protection "1; mode=block"
-          Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
           Header always set Referrer-Policy strict-origin-when-cross-origin
 
           # Disable directory browsing
           Options -Indexes
 
-          # Hide sensitive files and directories
+          # Hide sensitive files
           <FilesMatch "^\.">
               Require all denied
           </FilesMatch>
-
-          # Protect sensitive files
-          <Files ~ "(\.env|composer\.json|composer\.lock|package\.json|package-lock\.json|\.git)">
+          <Files ~ "(\.env|composer\.json|composer\.lock|package\.json|\.git)">
               Require all denied
           </Files>
 
-          # Next.js routing - serve static files directly, fallback to index.html
+          # Routing
           RewriteEngine On
-
-          # Handle Next.js static assets
           RewriteRule ^_next/(.*)$ _next/$1 [L]
           RewriteRule ^api/(.*)$ api/public/index.php [L]
-
-          # Serve existing files and directories
-          RewriteCond %{REQUEST_FILENAME} -f [OR]
-          RewriteCond %{REQUEST_FILENAME} -d
-          RewriteRule ^.*$ - [S=40]
-
-          # Fallback to index.html for client-side routing
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
           RewriteRule ^(.*)$ index.html [L]
           EOF
 
-          # API .htaccess for Laravel
+          # API .htaccess
           cat > api_htaccess << 'EOF'
-          # Disable directory browsing
           Options -Indexes
-
-          # Hide all files by default
           Require all denied
-
-          # Only allow access to public directory
           <Directory "public">
               Require all granted
           </Directory>
-
-          # Protect sensitive files
-          <Files ~ "(\.env|composer\.json|composer\.lock|artisan|\.git)">
+          <Files ~ "(\.env|composer\.json|artisan|\.git)">
               Require all denied
           </Files>
-
-          # Redirect all requests to Laravel's public/index.php
           RewriteEngine On
           RewriteRule ^(.*)$ public/index.php [L]
           EOF
 
-          # Public API .htaccess (inside Laravel public folder)
+          # API public .htaccess
           cat > api_public_htaccess << 'EOF'
           <IfModule mod_rewrite.c>
-              <IfModule mod_negotiation.c>
-                  Options -MultiViews -Indexes
-              </IfModule>
-
+              Options -MultiViews -Indexes
               RewriteEngine On
-
-              # Handle Authorization Header
               RewriteCond %{HTTP:Authorization} .
               RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-              # Redirect Trailing Slashes If Not A Folder...
               RewriteCond %{REQUEST_FILENAME} !-d
               RewriteCond %{REQUEST_URI} (.+)/$
               RewriteRule ^ %1 [L,R=301]
-
-              # Send Requests To Front Controller...
               RewriteCond %{REQUEST_FILENAME} !-d
               RewriteCond %{REQUEST_FILENAME} !-f
               RewriteRule ^ index.php [L]
@@ -150,30 +123,13 @@ jobs:
       - name: Create deployment package
         run: |
           mkdir -p deploy
-
-          # Laravel API (exclude vendor directory)
+          # Laravel API
           rsync -av --exclude='node_modules' --exclude='.git' --exclude='tests' --exclude='vendor' ./api/ deploy/api/
-
-          # Add API .htaccess files
           cp api_htaccess deploy/api/.htaccess
           cp api_public_htaccess deploy/api/public/.htaccess
-
-          # Next.js files to root
-          if [ -d "./client/out" ]; then
-            cp -r ./client/out/* deploy/
-          elif [ -d "./client/.next" ]; then
-            cp -r ./client/.next deploy/
-            cp -r ./client/public/* deploy/
-          fi
-
-          # Add root .htaccess for frontend and security
+          # Next.js static files to root
+          cp -r ./client/out/* deploy/
           cp root_htaccess deploy/.htaccess
-
-          # Only add fallback if no index.html exists
-          [ ! -f "deploy/index.html" ] && echo "<h1>FECA</h1><p>Loading...</p>" > deploy/index.html
-
-          echo "=== Security files created ==="
-          ls -la deploy/.htaccess deploy/api/.htaccess deploy/api/public/.htaccess
 
       - name: Deploy via SFTP
         run: |
@@ -188,13 +144,9 @@ jobs:
         run: |
           sshpass -p "${{ secrets.CPANEL_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} << 'ENDSSH'
           cd public_html/api
-          echo "Running composer install on server..."
           composer install --no-dev --optimize-autoloader --no-interaction
-          echo "Running Laravel optimizations..."
           php artisan config:cache
           php artisan route:cache
           php artisan view:cache
-          echo "Setting proper permissions..."
           chmod -R 755 storage bootstrap/cache
-          echo "Server-side setup complete!"
           ENDSSH
