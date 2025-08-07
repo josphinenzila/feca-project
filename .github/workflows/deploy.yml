@@ -1,20 +1,12 @@
 name: Deploy to cPanel
-
 on:
   push:
     branches: [main, master]
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: "npm"
-          cache-dependency-path: client/package-lock.json
 
       - name: Create Laravel .env
         working-directory: ./api
@@ -37,44 +29,172 @@ jobs:
           ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
           EOF
 
-      - name: Build Next.js standalone
-        working-directory: ./client
+      - name: Create root .htaccess for security
         run: |
-          cat > .env.production << EOF
-          NEXT_PUBLIC_APP_ENV=production
-          NEXT_PUBLIC_BACKEND_URL=https://feca4development.org/api
-          NEXT_PUBLIC_DOMAIN_URL=https://feca4development.org
+          cat > .htaccess << EOF
+          # Prevent directory browsing
+          Options -Indexes
+
+          # Deny access to sensitive files and directories
+          <FilesMatch "\.(env|git|gitignore|gitattributes)$">
+              Require all denied
+          </FilesMatch>
+
+          <DirectoryMatch "\.git">
+              Require all denied
+          </DirectoryMatch>
+
+          # Block access to composer files
+          <FilesMatch "(composer\.(json|lock)|package\.(json|lock))$">
+              Require all denied
+          </FilesMatch>
+
+          # Block access to log files
+          <FilesMatch "\.log$">
+              Require all denied
+          </FilesMatch>
           EOF
-          npm ci
-          npm run build
+
+      - name: Create API .htaccess for Laravel routing
+        run: |
+          cat > api_htaccess << EOF
+          # Laravel API routing
+          <IfModule mod_rewrite.c>
+              RewriteEngine On
+              
+              # Handle Authorization Header for API authentication
+              RewriteCond %{HTTP:Authorization} .
+              RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+              
+              # Handle preflight OPTIONS requests for CORS
+              RewriteCond %{REQUEST_METHOD} OPTIONS
+              RewriteRule ^(.*)$ $1 [R=200,L]
+              
+              # Redirect Trailing Slashes If Not A Folder...
+              RewriteCond %{REQUEST_FILENAME} !-d
+              RewriteCond %{REQUEST_URI} (.+)/$
+              RewriteRule ^ %1 [L,R=301]
+              
+              # Send Requests To Front Controller...
+              RewriteCond %{REQUEST_FILENAME} !-d
+              RewriteCond %{REQUEST_FILENAME} !-f
+              RewriteRule ^ index.php [L]
+          </IfModule>
+
+          # CORS and API headers
+          <IfModule mod_headers.c>
+              # CORS headers for API
+              Header always set Access-Control-Allow-Origin "*"
+              Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+              Header always set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-TOKEN"
+              Header always set Access-Control-Max-Age "3600"
+              
+              # Security headers
+              Header always set X-Content-Type-Options nosniff
+              Header always set X-Frame-Options SAMEORIGIN
+              Header always set X-XSS-Protection "1; mode=block"
+              Header always set Referrer-Policy "strict-origin-when-cross-origin"
+              
+              # API response headers
+              Header always set Content-Type "application/json; charset=utf-8" "expr=%{CONTENT_TYPE} =~ m#^application/json#"
+          </IfModule>
+
+          # Prevent directory browsing
+          Options -Indexes
+
+          # Deny access to sensitive files
+          <FilesMatch "\.(env|git|gitignore|gitattributes|log)$">
+              Require all denied
+          </FilesMatch>
+
+          <DirectoryMatch "\.git">
+              Require all denied
+          </DirectoryMatch>
+
+          # Deny access to storage and bootstrap/cache directories from web
+          RedirectMatch 403 ^/storage/.*$
+          RedirectMatch 403 ^/bootstrap/cache/.*$
+          EOF
 
       - name: Create deployment package
         run: |
           mkdir deploy
-          # Laravel (no vendor)
-          rsync -av --exclude=vendor --exclude=node_modules --exclude=.git ./api/ deploy/api/
-          # Next.js standalone
-          mkdir deploy/app
-          cp -r ./client/.next/standalone/* deploy/app/
-          cp -r ./client/.next/static deploy/app/.next/
-          cp -r ./client/public deploy/app/
-          echo '{"scripts":{"start":"node server.js"}}' > deploy/app/package.json
+
+          # Copy Laravel application files to laravel subdirectory (excluding public folder)
+          rsync -av \
+            --exclude=vendor \
+            --exclude=node_modules \
+            --exclude=.git \
+            --exclude=.gitignore \
+            --exclude=.gitattributes \
+            --exclude=storage/logs/* \
+            --exclude=bootstrap/cache/* \
+            --exclude=public \
+            ./api/ deploy/laravel/
+
+          # Copy Laravel's public folder contents to document root for API serving
+          cp -r ./api/public/* deploy/
+
+          # Update index.php to point to correct Laravel path
+          sed -i "s|__DIR__.'/../|__DIR__.'/laravel/|g" deploy/index.php
+
+          # Create a simple API info endpoint at root
+          cat > deploy/info.php << 'INFO_EOF'
+          <?php
+          header('Content-Type: application/json');
+          echo json_encode([
+              'api' => 'Laravel API Server',
+              'status' => 'active',
+              'version' => '1.0',
+              'endpoints' => [
+                  'base_url' => 'https://feca4development.org',
+                  'api_routes' => 'Check /api/* endpoints'
+              ]
+          ]);
+          INFO_EOF
+
+          # Move the API .htaccess to the deploy directory (document root)
+          mv api_htaccess deploy/.htaccess
 
       - name: Deploy via SFTP
         run: |
           sshpass -p "${{ secrets.CPANEL_PASSWORD }}" sftp -o StrictHostKeyChecking=no -P ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} <<EOF
           cd public_html
+
+          # Create backup directory with timestamp
+          mkdir backup_$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
+
+          # Backup existing files (optional safety measure)
+          mv laravel backup_$(date +%Y%m%d_%H%M%S)/ 2>/dev/null || true
+          mv index.php backup_$(date +%Y%m%d_%H%M%S)/ 2>/dev/null || true
+
+          # Upload new files
           lcd deploy
           put -r *
+
           quit
           EOF
 
-      - name: Setup on server
+      - name: Setup Laravel on server via SSH
         run: |
           sshpass -p "${{ secrets.CPANEL_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} << 'ENDSSH'
-          cd public_html/api
-          composer install --no-dev --optimize-autoloader
+          cd public_html/laravel
+
+          # Install composer dependencies
+          composer install --no-dev --optimize-autoloader --no-interaction
+
+          # Set proper permissions
+          chmod -R 755 storage bootstrap/cache
+          chmod -R 775 storage/logs storage/framework
+
+          # Laravel optimization commands
           php artisan config:cache
-          cd ../app
-          node --version || echo "Node.js not available"
+          php artisan route:cache
+          php artisan view:cache
+
+          # Create storage link (points to correct location)
+          cd ../
+          php laravel/artisan storage:link || true
+
+          echo "Laravel deployment completed successfully"
           ENDSSH
