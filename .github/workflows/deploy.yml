@@ -17,14 +17,31 @@ jobs:
           APP_KEY=${{ secrets.LARAVEL_APP_KEY }}
           APP_DEBUG=true
           APP_URL=https://feca4development.org
+
+          # Database Configuration
           DB_CONNECTION=mysql
           DB_HOST=${{ secrets.DB_HOST }}
           DB_PORT=${{ secrets.DB_PORT }}
           DB_DATABASE=${{ secrets.DB_DATABASE }}
           DB_USERNAME=${{ secrets.DB_USERNAME }}
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+
+          # Session Configuration (use database sessions)
+          SESSION_DRIVER=database
+          SESSION_LIFETIME=120
+          SESSION_ENCRYPT=false
+          SESSION_PATH=/
+          SESSION_DOMAIN=feca4development.org
+
+          # Cache Configuration
+          CACHE_DRIVER=file
+          QUEUE_CONNECTION=sync
+
+          # JWT Configuration
           JWT_PUBLIC_KEY="${{ secrets.JWT_PUBLIC_KEY }}"
           JWT_PRIVATE_KEY="${{ secrets.JWT_PRIVATE_KEY }}"
+
+          # Admin Configuration
           ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
           ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
           EOF
@@ -187,7 +204,17 @@ jobs:
           chmod -R 755 storage bootstrap/cache
           chmod -R 775 storage/logs storage/framework
 
-          # Laravel optimization commands
+          # Test database connection before running migrations
+          echo "Testing database connection..."
+          php artisan tinker --execute="try { DB::connection()->getPdo(); echo 'Database connection successful\n'; } catch(Exception \$e) { echo 'Database connection failed: ' . \$e->getMessage() . '\n'; exit(1); }"
+
+          # Run database migrations (create tables if they don't exist)
+          echo "Running database migrations..."
+          php artisan migrate --force
+
+          # Clear and cache configurations
+          php artisan config:clear
+          php artisan cache:clear
           php artisan config:cache
           php artisan route:cache
           php artisan view:cache
