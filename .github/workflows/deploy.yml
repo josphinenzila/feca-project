@@ -141,7 +141,7 @@ jobs:
         run: |
           mkdir deploy
 
-          # Copy Laravel application files to laravel subdirectory (excluding public folder)
+          # Copy ALL Laravel files directly to deploy directory (not in subdirectory)
           rsync -av \
             --exclude=vendor \
             --exclude=node_modules \
@@ -150,16 +150,9 @@ jobs:
             --exclude=.gitattributes \
             --exclude=storage/logs/* \
             --exclude=bootstrap/cache/* \
-            --exclude=public \
-            ./api/ deploy/laravel/
+            ./api/ deploy/
 
-          # Copy Laravel's public folder contents to document root for API serving
-          cp -r ./api/public/* deploy/
-
-          # Update index.php to point to correct Laravel path
-          sed -i "s|__DIR__.'/../|__DIR__.'/laravel/|g" deploy/index.php
-
-          # Create a simple API info endpoint at root
+          # Create a simple API info endpoint
           cat > deploy/info.php << 'INFO_EOF'
           <?php
           header('Content-Type: application/json');
@@ -174,8 +167,11 @@ jobs:
           ]);
           INFO_EOF
 
-          # Move the API .htaccess to the deploy directory (document root)
+          # Move the API .htaccess to the deploy directory
           mv api_htaccess deploy/.htaccess
+
+          # Copy root .htaccess for additional security
+          cp .htaccess deploy/root.htaccess
 
       - name: Deploy via SFTP
         run: |
@@ -200,7 +196,7 @@ jobs:
       - name: Setup Laravel on server via SSH
         run: |
           sshpass -p "${{ secrets.CPANEL_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} << 'ENDSSH'
-          cd public_html/backend/laravel
+          cd public_html/backend
 
           # Install composer dependencies
           composer install --no-dev --optimize-autoloader --no-interaction
@@ -220,9 +216,8 @@ jobs:
           php artisan route:cache || echo "Route caching skipped"
           php artisan view:cache || echo "View caching skipped"
 
-          # Create storage link (points to correct location)
-          cd ../
-          php laravel/artisan storage:link || true
+          # Create storage link if needed
+          php artisan storage:link || true
 
           echo "Laravel deployment completed successfully"
           ENDSSH
