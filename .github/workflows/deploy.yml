@@ -31,11 +31,8 @@ jobs:
           SESSION_LIFETIME=120
           SESSION_ENCRYPT=false
 
-          # Cache Configuration (use database instead of file for shared hosting)
+          # Cache Configuration
           CACHE_DRIVER=database
-          CACHE_PREFIX=feca_cache
-
-          # Queue Configuration
           QUEUE_CONNECTION=sync
 
           # JWT Configuration
@@ -53,17 +50,17 @@ jobs:
           # Prevent directory browsing
           Options -Indexes
 
+          # Hide backend directory from direct access
+          <DirectoryMatch "backend">
+              Require all denied
+          </DirectoryMatch>
+
           # Deny access to sensitive files and directories
           <FilesMatch "\.(env|git|gitignore|gitattributes)$">
               Require all denied
           </FilesMatch>
 
           <DirectoryMatch "\.git">
-              Require all denied
-          </DirectoryMatch>
-
-          # Hide backend directory from direct access
-          <DirectoryMatch "backend">
               Require all denied
           </DirectoryMatch>
 
@@ -91,17 +88,17 @@ jobs:
               
               # Handle preflight OPTIONS requests for CORS
               RewriteCond %{REQUEST_METHOD} OPTIONS
-              RewriteRule ^(.*)$ \$1 [R=200,L]
+              RewriteRule ^(.*)$ $1 [R=200,L]
               
               # Redirect Trailing Slashes If Not A Folder...
               RewriteCond %{REQUEST_FILENAME} !-d
               RewriteCond %{REQUEST_URI} (.+)/$
               RewriteRule ^ %1 [L,R=301]
               
-              # Send ALL requests to index.php in api directory
+              # Send Requests To Front Controller...
               RewriteCond %{REQUEST_FILENAME} !-d
               RewriteCond %{REQUEST_FILENAME} !-f
-              RewriteRule ^(.*)$ index.php [QSA,L]
+              RewriteRule ^ index.php [L]
           </IfModule>
 
           # CORS and API headers
@@ -117,34 +114,34 @@ jobs:
               Header always set X-Frame-Options SAMEORIGIN
               Header always set X-XSS-Protection "1; mode=block"
               Header always set Referrer-Policy "strict-origin-when-cross-origin"
+              
+              # API response headers
+              Header always set Content-Type "application/json; charset=utf-8" "expr=%{CONTENT_TYPE} =~ m#^application/json#"
           </IfModule>
-
-          # Allow all access to this directory (API endpoints)
-          <RequireAll>
-              Require all granted
-          </RequireAll>
 
           # Prevent directory browsing
           Options -Indexes
 
-          # Deny access to sensitive files only
+          # Deny access to sensitive files
           <FilesMatch "\.(env|git|gitignore|gitattributes|log)$">
-              Order allow,deny
-              Deny from all
+              Require all denied
           </FilesMatch>
 
-          # Deny access to .git directories
           <DirectoryMatch "\.git">
-              Order allow,deny
-              Deny from all
+              Require all denied
           </DirectoryMatch>
+
+          # Deny access to storage and bootstrap/cache directories from web
+          RedirectMatch 403 ^/backend/laravel/.*$
+          RedirectMatch 403 ^/storage/.*$
+          RedirectMatch 403 ^/bootstrap/cache/.*$
           EOF
 
       - name: Create deployment package
         run: |
           mkdir deploy
 
-          # Copy Laravel API code (exclude vendor for composer install via SSH)
+          # Copy Laravel application files to laravel subdirectory (excluding public folder)
           rsync -av \
             --exclude=vendor \
             --exclude=node_modules \
@@ -153,13 +150,32 @@ jobs:
             --exclude=.gitattributes \
             --exclude=storage/logs/* \
             --exclude=bootstrap/cache/* \
-            ./api/ deploy/
+            --exclude=public \
+            ./api/ deploy/laravel/
 
-          # Move the API .htaccess to the deploy directory
+          # Copy Laravel's public folder contents to document root for API serving
+          cp -r ./api/public/* deploy/
+
+          # Update index.php to point to correct Laravel path
+          sed -i "s|__DIR__.'/../|__DIR__.'/laravel/|g" deploy/index.php
+
+          # Create a simple API info endpoint at root
+          cat > deploy/info.php << 'INFO_EOF'
+          <?php
+          header('Content-Type: application/json');
+          echo json_encode([
+              'api' => 'Laravel API Server',
+              'status' => 'active',
+              'version' => '1.0',
+              'endpoints' => [
+                  'base_url' => 'https://feca4development.org/backend',
+                  'api_routes' => 'Check /api/* endpoints'
+              ]
+          ]);
+          INFO_EOF
+
+          # Move the API .htaccess to the deploy directory (document root)
           mv api_htaccess deploy/.htaccess
-
-          # Copy root .htaccess for additional security
-          cp .htaccess deploy/root.htaccess
 
       - name: Deploy via SFTP
         run: |
@@ -175,8 +191,8 @@ jobs:
           put -r * backend/
 
           # Move root htaccess to document root for additional security
-          get backend/root.htaccess .htaccess
-          rm backend/root.htaccess
+          get backend/root.htaccess .htaccess 2>/dev/null || true
+          rm backend/root.htaccess 2>/dev/null || true
 
           quit
           EOF
@@ -186,12 +202,7 @@ jobs:
           sshpass -p "${{ secrets.CPANEL_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} << 'ENDSSH'
           cd public_html/backend/laravel
 
-          # Check PHP version
-          echo "Checking PHP version..."
-          php -v
-
           # Install composer dependencies
-          echo "Installing Composer dependencies..."
           composer install --no-dev --optimize-autoloader --no-interaction
 
           # Set proper permissions
@@ -202,20 +213,16 @@ jobs:
           echo "Setting up cache table..."
           php artisan cache:table 2>/dev/null || echo "Cache table may already exist"
 
-          # Clear configurations first
+          # Clear and cache configurations
           php artisan config:clear
           php artisan cache:clear
-
-          # Cache configurations (skip route and view cache if they cause issues)
           php artisan config:cache
+          php artisan route:cache || echo "Route caching skipped"
+          php artisan view:cache || echo "View caching skipped"
 
-          # Try to cache routes and views, but don't fail if there are issues
-          php artisan route:cache || echo "Route caching skipped due to exec() restriction"
-          php artisan view:cache || echo "View caching skipped due to exec() restriction"
-
-          # Create storage link in the public directory
+          # Create storage link (points to correct location)
           cd ../
-          php laravel/artisan storage:link 2>/dev/null || echo "Storage link may already exist"
+          php laravel/artisan storage:link || true
 
-          echo "Laravel API deployment completed successfully"
+          echo "Laravel deployment completed successfully"
           ENDSSH
