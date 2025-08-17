@@ -16,7 +16,7 @@ jobs:
           APP_ENV=production
           APP_KEY=${{ secrets.LARAVEL_APP_KEY }}
           APP_DEBUG=false
-          APP_URL=https://feca4development.org
+          APP_URL=https://feca4development.org/backend
 
           # Database Configuration
           DB_CONNECTION=mysql
@@ -158,17 +158,17 @@ jobs:
           sshpass -p "${{ secrets.CPANEL_PASSWORD }}" sftp -o StrictHostKeyChecking=no -P ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} <<EOF
           cd public_html
 
-          # Remove old API files (be careful with this - adjust as needed)
-          rm -rf api
+          # Remove old directories (both api and backend for clean deployment)
+          rm -rf api backend
 
-          # Upload new files
+          # Upload new files to backend directory
           lcd deploy
-          mkdir api
-          put -r * api/
+          mkdir backend
+          put -r * backend/
 
           # Move root htaccess to document root for additional security
-          get api/root.htaccess .htaccess
-          rm api/root.htaccess
+          get backend/root.htaccess .htaccess
+          rm backend/root.htaccess
 
           quit
           EOF
