@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 
 interface ButtonProps {
   children: React.ReactNode;
-  variant?: "primary" | "outline";
-  size?: "md" | "lg";
+  variant?: "primary" | "outline" | "glass";
+  size?: "sm" | "md" | "lg";
   className?: string;
   onClick?: () => void;
 }
@@ -23,12 +23,15 @@ const Button: React.FC<
 
   const variants = {
     primary:
-      "bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500",
+      "bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500 shadow-lg",
     outline:
-      "border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white focus:ring-emerald-500",
+      "border-2 border-white text-white hover:bg-white hover:text-gray-900 focus:ring-white/50",
+    glass:
+      "bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 focus:ring-white/50",
   };
 
   const sizes = {
+    sm: "px-4 py-2 text-sm",
     md: "px-6 py-3 text-base",
     lg: "px-8 py-4 text-lg",
   };
@@ -43,82 +46,58 @@ const Button: React.FC<
   );
 };
 
-const HeroSlider = () => {
+const HeroSlider: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   const slides = [
     {
       id: 1,
-      title: "Building Peaceful Communities Through Civic Action",
-      subtitle: "Empowering marginalized voices to ignite civic transformation",
+      category: "Our Mission",
+      title: "Peaceful Communities",
+      subtitle: "Through Civic Action",
       description:
-        "FECA champions inclusive governance, digital democracy, and sustainable livelihoods across Kenya and beyond.",
-      backgroundImage:
+        "Empowering marginalized voices to ignite civic transformation through inclusive governance, digital democracy, and sustainable livelihoods across Kenya and beyond.",
+      image:
         "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      gradient: "from-emerald-900/50 to-blue-900/50",
       primaryColor: "emerald",
-      secondaryColor: "blue",
-      stats: [
-        { icon: "👥", number: "50,000+", label: "People Reached" },
-        { icon: "🌍", number: "25+", label: "Communities" },
-        { icon: "💡", number: "100+", label: "Projects" },
-        { icon: "❤️", number: "5+", label: "Years Impact" },
-      ],
+      accent: "blue",
     },
     {
       id: 2,
-      title: "Civic Engagement & Democratic Innovation",
-      subtitle: "Re-imagining governance through digital tools",
+      category: "CEDIP Program",
+      title: "Civic Engagement",
+      subtitle: "& Democratic Innovation",
       description:
-        "Youth-led movements, inclusive participation, and cutting-edge civic technology for transparent and accountable governance.",
-      backgroundImage:
+        "Re-imagining governance through digital tools, youth-led movements, and inclusive participation for transparent and accountable democracy that serves everyone.",
+      image:
         "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      gradient: "from-blue-900/50 to-purple-900/50",
       primaryColor: "blue",
-      secondaryColor: "purple",
-      stats: [
-        { icon: "🗳️", number: "15+", label: "Civic Labs" },
-        { icon: "📱", number: "10K+", label: "Digital Users" },
-        { icon: "👨‍💼", number: "500+", label: "Youth Ambassadors" },
-        { icon: "📊", number: "50+", label: "Policy Inputs" },
-      ],
+      accent: "indigo",
     },
     {
       id: 3,
-      title: "Peace Action & Community Resilience",
-      subtitle: "Strengthening harmony through environmental stewardship",
+      category: "PASCOR Program",
+      title: "Peace Action",
+      subtitle: "& Community Resilience",
       description:
-        "Community-led dialogue, climate adaptation, and conflict prevention through grassroots environmental action and peacebuilding.",
-      backgroundImage:
+        "Strengthening social harmony through environmental stewardship, community-led dialogue, climate adaptation, and conflict prevention initiatives.",
+      image:
         "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      gradient: "from-green-900/50 to-emerald-900/50",
       primaryColor: "green",
-      secondaryColor: "emerald",
-      stats: [
-        { icon: "🕊️", number: "200+", label: "Peace Dialogues" },
-        { icon: "🌱", number: "50K+", label: "Trees Planted" },
-        { icon: "🤝", number: "30+", label: "Mediators Trained" },
-        { icon: "🛡️", number: "15+", label: "Resilience Hubs" },
-      ],
+      accent: "emerald",
     },
     {
       id: 4,
-      title: "Inclusive Economies & Future Readiness",
-      subtitle: "Creating pathways for economic empowerment",
+      category: "Economic Program",
+      title: "Inclusive Economies",
+      subtitle: "& Future Readiness",
       description:
-        "Digital skills training, entrepreneurship incubation, and sustainable livelihoods for vulnerable groups and youth innovation.",
-      backgroundImage:
+        "Creating pathways for economic empowerment through digital skills training, entrepreneurship incubation, and sustainable livelihoods for vulnerable groups.",
+      image:
         "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      gradient: "from-orange-900/50 to-red-900/50",
       primaryColor: "orange",
-      secondaryColor: "red",
-      stats: [
-        { icon: "💼", number: "1000+", label: "Skills Trained" },
-        { icon: "🚀", number: "150+", label: "Startups Supported" },
-        { icon: "👩‍💼", number: "60%", label: "Women Entrepreneurs" },
-        { icon: "💰", number: "$2M+", label: "Capital Facilitated" },
-      ],
+      accent: "red",
     },
   ];
 
@@ -127,7 +106,7 @@ const HeroSlider = () => {
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    }, 7000);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, slides.length]);
@@ -135,82 +114,82 @@ const HeroSlider = () => {
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
     setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000); // Resume auto-play after 10 seconds
+    setTimeout(() => setIsAutoPlaying(true), 15000);
   };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
     setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    setTimeout(() => setIsAutoPlaying(true), 15000);
   };
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
     setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    setTimeout(() => setIsAutoPlaying(true), 15000);
   };
 
   const currentSlideData = slides[currentSlide];
 
   return (
-    <section className="transition-all duration-1000 ease-in-out relative overflow-hidden h-screen flex items-center">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out"
-        style={{
-          backgroundImage: `url('${currentSlideData.backgroundImage}')`,
-        }}
-      />
-
-      {/* Gradient Overlay - Lighter for more image visibility */}
-      <div
-        className={`absolute inset-0 bg-gradient-to-br ${currentSlideData.gradient} transition-all duration-1000 ease-in-out`}
-      />
-
-      {/* Additional Pattern Overlay */}
-      <div className="absolute inset-0 opacity-5">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
+    <section className="relative h-screen overflow-hidden">
+      {/* Background Images */}
+      <div className="absolute inset-0">
+        {slides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${
+              index === currentSlide ? "opacity-100" : "opacity-0"
+            }`}
+            style={{ backgroundImage: `url('${slide.image}')` }}
+          />
+        ))}
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div className="grid lg:grid-cols-2 gap-8 items-center">
-          {/* Content Side */}
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <div className="inline-flex items-center px-4 py-2 bg-white/95 backdrop-blur-sm rounded-full text-sm font-medium text-gray-800 shadow-lg">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></span>
-                Peace. Participation. Progress.
-              </div>
+      {/* Dynamic Gradient Overlay */}
+      <div
+        className={`absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-${currentSlideData.primaryColor}-900/60 transition-all duration-1000`}
+      />
 
-              <h1 className="text-3xl lg:text-5xl font-bold text-white leading-tight drop-shadow-2xl">
-                <span className="block mb-1">
-                  {currentSlideData.title.split(" ").slice(0, 2).join(" ")}
-                </span>
-                <span className={`text-${currentSlideData.primaryColor}-300`}>
-                  {currentSlideData.title.split(" ").slice(2, 4).join(" ")}
-                </span>{" "}
-                <span className={`text-${currentSlideData.secondaryColor}-300`}>
-                  {currentSlideData.title.split(" ").slice(4).join(" ")}
-                </span>
-              </h1>
+      {/* Subtle Background Pattern */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/5"></div>
+      </div>
 
-              <p className="text-lg text-gray-100 leading-relaxed font-medium drop-shadow-lg">
-                {currentSlideData.subtitle}
-              </p>
-
-              <p className="text-base text-gray-200 leading-relaxed drop-shadow-md">
-                {currentSlideData.description}
-              </p>
+      {/* Content Container */}
+      <div className="relative z-10 h-full flex flex-col">
+        {/* Main Content Area */}
+        <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 pb-24 sm:pb-16">
+          <div className="text-center max-w-4xl mx-auto w-full">
+            {/* Category */}
+            <div
+              className={`inline-block px-3 py-1.5 bg-${currentSlideData.primaryColor}-500/20 backdrop-blur-sm border border-${currentSlideData.primaryColor}-300/30 text-${currentSlideData.primaryColor}-200 rounded-full text-xs sm:text-sm font-semibold mb-4 sm:mb-6 transition-all duration-700 transform hover:scale-105`}
+            >
+              {currentSlideData.category}
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button size="md" className="transform hover:scale-105">
-                Get Involved
+            {/* Main Title */}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-3 sm:mb-4 leading-tight transition-all duration-700">
+              <span className="block">{currentSlideData.title}</span>
+              <span
+                className={`block text-${currentSlideData.primaryColor}-300 transition-colors duration-700`}
+              >
+                {currentSlideData.subtitle}
+              </span>
+            </h1>
+
+            {/* Description */}
+            <p className="text-sm sm:text-base md:text-lg text-gray-200 max-w-2xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2 transition-all duration-700">
+              {currentSlideData.description}
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full max-w-md sm:max-w-none mx-auto">
+              <Button
+                size="md"
+                className="transform hover:scale-105 transition-transform shadow-xl w-full sm:w-auto"
+              >
+                Explore Program
                 <svg
                   className="w-4 h-4 ml-2"
                   fill="none"
@@ -226,162 +205,125 @@ const HeroSlider = () => {
                 </svg>
               </Button>
               <Button
-                variant="outline"
+                variant="glass"
                 size="md"
-                className="transform hover:scale-105 bg-white/10 border-white/30 text-white hover:bg-white hover:text-gray-900"
+                className="transform hover:scale-105 transition-transform w-full sm:w-auto"
               >
                 Learn More
               </Button>
             </div>
           </div>
-
-          {/* Stats/Visual Side */}
-          <div className="relative">
-            <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl p-6 transform transition-all duration-500 hover:shadow-2xl">
-              <div className="grid grid-cols-2 gap-4">
-                {currentSlideData.stats.map((stat, index) => (
-                  <div
-                    key={index}
-                    className="text-center transform transition-all duration-300 hover:scale-105"
-                  >
-                    <div
-                      className={`w-12 h-12 bg-${currentSlideData.primaryColor}-100 rounded-xl flex items-center justify-center mx-auto mb-2 text-xl`}
-                    >
-                      {stat.icon}
-                    </div>
-                    <h3 className="font-bold text-lg text-gray-900">
-                      {stat.number}
-                    </h3>
-                    <p className="text-xs text-gray-600 font-medium">
-                      {stat.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Progress Bar */}
-              <div className="mt-6 pt-4 border-t border-gray-200">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-medium text-gray-600">
-                    Our Impact
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {currentSlide + 1} of {slides.length}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-1.5">
-                  <div
-                    className={`bg-${currentSlideData.primaryColor}-500 h-1.5 rounded-full transition-all duration-5000 ease-linear`}
-                    style={{ width: isAutoPlaying ? "100%" : "0%" }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
+      </div>
 
-        {/* Navigation Controls */}
-        <div className="flex justify-center items-center space-x-6 mt-8">
-          {/* Previous Button */}
-          <button
-            onClick={prevSlide}
-            className="p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-all duration-200 group"
-          >
-            <svg
-              className="w-4 h-4 text-gray-600 group-hover:text-gray-900"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+      {/* Right Side Dot Navigation */}
+      <div className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20">
+        <div className="flex flex-col items-center space-y-4">
+          {slides.map((slide, index) => (
+            <button
+              key={slide.id}
+              onClick={() => goToSlide(index)}
+              className="group relative p-1"
+              aria-label={`Go to slide ${index + 1}: ${slide.category}`}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
-
-          {/* Slide Indicators */}
-          <div className="flex space-x-2">
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+              {/* Outer Ring */}
+              <div
+                className={`w-4 h-4 rounded-full border-2 transition-all duration-300 ${
                   index === currentSlide
-                    ? `bg-${currentSlideData.primaryColor}-400 scale-125`
-                    : "bg-white/70 hover:bg-white/90"
+                    ? `border-${currentSlideData.primaryColor}-400 bg-${currentSlideData.primaryColor}-400/20`
+                    : "border-white/40 hover:border-white/80"
                 }`}
-              />
-            ))}
-          </div>
+              >
+                {/* Inner Dot */}
+                <div
+                  className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-300 ${
+                    index === currentSlide
+                      ? `w-2 h-2 bg-${currentSlideData.primaryColor}-400`
+                      : "w-1 h-1 bg-white/60 group-hover:bg-white/90 group-hover:w-1.5 group-hover:h-1.5"
+                  }`}
+                />
+              </div>
 
-          {/* Next Button */}
-          <button
-            onClick={nextSlide}
-            className="p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-all duration-200 group"
-          >
-            <svg
-              className="w-4 h-4 text-gray-600 group-hover:text-gray-900"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
+              {/* Progress Ring for Active Slide */}
+              {index === currentSlide && isAutoPlaying && (
+                <div className="absolute inset-0">
+                  <svg
+                    className="w-4 h-4 transform -rotate-90"
+                    viewBox="0 0 16 16"
+                  >
+                    <circle
+                      cx="8"
+                      cy="8"
+                      r="6"
+                      fill="none"
+                      stroke={`rgb(52 211 153)`} // emerald-400
+                      strokeWidth="1"
+                      strokeDasharray="37.7"
+                      strokeDashoffset="37.7"
+                      className="animate-[progress_7s_linear_infinite]"
+                    />
+                  </svg>
+                </div>
+              )}
+
+              {/* Tooltip */}
+              <div className="absolute right-8 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                <div className="bg-black/80 backdrop-blur-md text-white px-3 py-1 rounded-md text-sm whitespace-nowrap">
+                  {slide.category}
+                </div>
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-black/80 rotate-45"></div>
+              </div>
+            </button>
+          ))}
         </div>
+      </div>
 
-        {/* Auto-play Indicator */}
-        <div className="flex justify-center mt-3">
+      {/* Bottom Navigation Controls */}
+      <div className="absolute bottom-4 sm:bottom-8 left-4 sm:left-8 z-20">
+        <div className="flex items-center space-x-4">
+          {/* Auto-play Toggle */}
           <button
             onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-            className="flex items-center space-x-2 px-3 py-1.5 bg-white/80 backdrop-blur-sm rounded-full text-xs text-gray-600 hover:bg-white/90 transition-all duration-200"
+            className="p-2 sm:p-3 bg-white/20 backdrop-blur-md rounded-full border border-white/30 hover:bg-white/30 transition-all duration-200 group"
+            aria-label={isAutoPlaying ? "Pause slideshow" : "Play slideshow"}
           >
             {isAutoPlaying ? (
-              <>
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 9v6m4-6v6"
-                  />
-                </svg>
-                <span>Pause</span>
-              </>
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-white group-hover:scale-110 transition-transform"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 9v6m4-6v6"
+                />
+              </svg>
             ) : (
-              <>
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>Auto-play</span>
-              </>
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-white group-hover:scale-110 transition-transform"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
             )}
           </button>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes progress {
+          from {
+            stroke-dashoffset: 37.7;
+          }
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+      `}</style>
     </section>
   );
 };
