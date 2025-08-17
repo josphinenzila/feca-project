@@ -31,8 +31,11 @@ jobs:
           SESSION_LIFETIME=120
           SESSION_ENCRYPT=false
 
-          # Cache Configuration
-          CACHE_DRIVER=file
+          # Cache Configuration (use database instead of file for shared hosting)
+          CACHE_DRIVER=database
+          CACHE_PREFIX=feca_cache
+
+          # Queue Configuration
           QUEUE_CONNECTION=sync
 
           # JWT Configuration
@@ -181,7 +184,7 @@ jobs:
       - name: Setup Laravel on server via SSH
         run: |
           sshpass -p "${{ secrets.CPANEL_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p ${{ secrets.CPANEL_PORT }} ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} << 'ENDSSH'
-          cd public_html/backend
+          cd public_html/backend/laravel
 
           # Check PHP version
           echo "Checking PHP version..."
@@ -195,15 +198,24 @@ jobs:
           chmod -R 755 storage bootstrap/cache
           chmod -R 775 storage/logs storage/framework
 
-          # Clear and cache configurations
+          # Create cache table if using database cache
+          echo "Setting up cache table..."
+          php artisan cache:table 2>/dev/null || echo "Cache table may already exist"
+
+          # Clear configurations first
           php artisan config:clear
           php artisan cache:clear
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
 
-          # Create storage link if needed
-          php artisan storage:link || true
+          # Cache configurations (skip route and view cache if they cause issues)
+          php artisan config:cache
+
+          # Try to cache routes and views, but don't fail if there are issues
+          php artisan route:cache || echo "Route caching skipped due to exec() restriction"
+          php artisan view:cache || echo "View caching skipped due to exec() restriction"
+
+          # Create storage link in the public directory
+          cd ../
+          php laravel/artisan storage:link 2>/dev/null || echo "Storage link may already exist"
 
           echo "Laravel API deployment completed successfully"
           ENDSSH
