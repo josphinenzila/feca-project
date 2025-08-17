@@ -185,6 +185,10 @@ jobs:
           chmod -R 755 storage bootstrap/cache
           chmod -R 775 storage/logs storage/framework
 
+          # Test database connection
+          echo "Testing database connection..."
+          php artisan tinker --execute="try { DB::connection()->getPdo(); echo 'Database connection successful\n'; } catch(Exception \$e) { echo 'Database connection failed: ' . \$e->getMessage() . '\n'; }"
+
           # Clear and cache configurations (skip migrations)
           php artisan config:clear
           php artisan cache:clear
