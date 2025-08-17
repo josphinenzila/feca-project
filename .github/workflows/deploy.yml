@@ -185,9 +185,6 @@ jobs:
           chmod -R 755 storage bootstrap/cache
           chmod -R 775 storage/logs storage/framework
 
-          # Test database connection
-          echo "Testing database connection..."
-
           # Clear and cache configurations (skip migrations)
           php artisan config:clear
           php artisan cache:clear
