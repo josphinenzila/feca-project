@@ -22,26 +22,14 @@ const Gallery: React.FC = () => {
 
     {
       id: 6,
-      image: "/gallery/06.jpg",
+      image: "/gallery/03.jpg",
       title: "Youth Leadership Summit",
       description: "Developing the next generation of community leaders",
     },
-    {
-      id: 7,
-      image: "/gallery/07.jpeg",
-      title: "Conflict Mediation",
-      description: "Training local mediators for peaceful conflict resolution",
-    },
-    {
-      id: 8,
-      image: "/gallery/08.jpeg",
-      title: "Innovation Hub",
-      description:
-        "Creating solutions for local challenges through collaboration",
-    },
+
     {
       id: 9,
-      image: "/gallery/09.jpeg",
+      image: "/gallery/04.jpeg",
       title: "Community Assembly",
       description:
         "Democratic participation in local governance and decision-making",
