@@ -8,92 +8,43 @@ const Gallery: React.FC = () => {
   const galleryImages = [
     {
       id: 1,
-      image:
-        "https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
+      image: "/gallery/01.jpeg",
       title: "Community Peace Dialogue",
       description:
         "Building bridges between communities through meaningful conversation",
     },
     {
       id: 2,
-      image:
-        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
+      image: "/gallery/02.jpeg",
       title: "Youth Tech Workshop",
       description: "Empowering young minds with digital skills and innovation",
     },
-    {
-      id: 3,
-      image:
-        "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
-      title: "Environmental Action",
-      description: "Planting seeds for a sustainable and greener future",
-    },
-    {
-      id: 4,
-      image:
-        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
-      title: "Women's Empowerment",
-      description:
-        "Supporting women entrepreneurs in building thriving businesses",
-    },
-    {
-      id: 5,
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
-      title: "Civic Education",
-      description:
-        "Teaching constitutional rights and democratic participation",
-    },
+
     {
       id: 6,
-      image:
-        "https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
+      image: "/gallery/06.jpg",
       title: "Youth Leadership Summit",
       description: "Developing the next generation of community leaders",
     },
     {
       id: 7,
-      image:
-        "https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
+      image: "/gallery/07.jpeg",
       title: "Conflict Mediation",
       description: "Training local mediators for peaceful conflict resolution",
     },
     {
       id: 8,
-      image:
-        "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
+      image: "/gallery/08.jpeg",
       title: "Innovation Hub",
       description:
         "Creating solutions for local challenges through collaboration",
     },
     {
       id: 9,
-      image:
-        "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
+      image: "/gallery/09.jpeg",
       title: "Community Assembly",
       description:
         "Democratic participation in local governance and decision-making",
-    },
-    {
-      id: 10,
-      image:
-        "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
-      title: "Agricultural Training",
-      description: "Sustainable farming practices for food security",
-    },
-    {
-      id: 11,
-      image:
-        "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
-      title: "Digital Literacy",
-      description: "Bridging the digital divide in rural communities",
-    },
-    {
-      id: 12,
-      image:
-        "https://images.unsplash.com/photo-1509099836639-18ba1795216d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
-      title: "Community Celebration",
-      description: "Celebrating achievements and strengthening community bonds",
     },
   ];
 

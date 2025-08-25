@@ -58,8 +58,7 @@ const HeroSlider: React.FC = () => {
       subtitle: "Through Civic Action",
       description:
         "Empowering marginalized voices to ignite civic transformation through inclusive governance, digital democracy, and sustainable livelihoods across Kenya and beyond.",
-      image:
-        "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+      image: "/hero/hero1.jpeg",
       primaryColor: "emerald",
       accent: "blue",
     },
@@ -70,8 +69,7 @@ const HeroSlider: React.FC = () => {
       subtitle: "& Democratic Innovation",
       description:
         "Re-imagining governance through digital tools, youth-led movements, and inclusive participation for transparent and accountable democracy that serves everyone.",
-      image:
-        "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+      image: "/hero/hero2.jpeg",
       primaryColor: "blue",
       accent: "indigo",
     },
@@ -82,8 +80,7 @@ const HeroSlider: React.FC = () => {
       subtitle: "& Community Resilience",
       description:
         "Strengthening social harmony through environmental stewardship, community-led dialogue, climate adaptation, and conflict prevention initiatives.",
-      image:
-        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+      image: "/hero/hero3.jpeg",
       primaryColor: "green",
       accent: "emerald",
     },
@@ -94,8 +91,7 @@ const HeroSlider: React.FC = () => {
       subtitle: "& Future Readiness",
       description:
         "Creating pathways for economic empowerment through digital skills training, entrepreneurship incubation, and sustainable livelihoods for vulnerable groups.",
-      image:
-        "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+      image: "/hero/hero1.jpeg",
       primaryColor: "orange",
       accent: "red",
     },
