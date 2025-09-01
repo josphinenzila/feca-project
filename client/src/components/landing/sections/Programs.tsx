@@ -1,133 +1,179 @@
 import React from "react";
+import Image from "next/image";
 import { Card } from "@/components/landing/ui/Card";
 import { Button } from "@/components/landing/ui/Button";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+
+interface Program {
+  title: string;
+  description: string;
+  image: string;
+  features: string[];
+  color: string;
+  stats?: {
+    label: string;
+    value: string;
+  };
+  href: string;
+}
 
 const Programs: React.FC = () => {
-  const programs = [
+  const programs: Program[] = [
     {
       title: "Civic Engagement & Democratic Innovation",
       description:
         "Re-imagining governance through digital tools, youth-led movements, and inclusive participation.",
-      icon: (
-        <svg
-          className="w-8 h-8 text-emerald-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-          />
-        </svg>
-      ),
+      image: "/hero/hero1.jpeg",
+      color: "emerald",
+      stats: {
+        label: "Youth Engaged",
+        value: "5,000+",
+      },
+
       features: [
         "Civic Labs Kenya",
         "Digital Democracy Toolkit",
-        "Constitutional Literacy Campaign",
+        "Constitutional Literacy",
       ],
+      href: "/programs/civic",
     },
     {
       title: "Peace Action, Sustainability & Community Resilience",
       description:
         "Strengthening social harmony and environmental stewardship through local action.",
-      icon: (
-        <svg
-          className="w-8 h-8 text-blue-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-          />
-        </svg>
-      ),
+      image: "/hero/hero2.jpeg",
+      color: "blue",
+      stats: {
+        label: "Communities Served",
+        value: "50+",
+      },
       features: [
-        "Peace Circles & Mediation Forums",
+        "Peace Circles & Mediation",
         "Eco-Action Network",
-        "Resilience Hubs",
+        "Community Resilience Hubs",
       ],
+      href: "/programs/peace",
     },
     {
       title: "Inclusive Economies & Future Readiness",
       description:
         "Creating pathways for economic empowerment, digital skills, and sustainable livelihoods.",
-      icon: (
-        <svg
-          className="w-8 h-8 text-purple-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M13 10V3L4 14h7v7l9-11h-7z"
-          />
-        </svg>
-      ),
+      image: "/hero/hero3.jpeg",
+      color: "purple",
+      stats: {
+        label: "Skills Training",
+        value: "3,000+",
+      },
       features: [
         "Future Work Academy",
         "Inclusive Finance Lab",
         "Youth Enterprise Challenge",
       ],
+      href: "/programs/economies",
     },
   ];
 
+  const getColorClasses = (color: string) => {
+    const colorMap = {
+      emerald: {
+        accent: "text-emerald-600",
+        bg: "bg-emerald-50",
+        border: "border-emerald-200",
+        hover: "hover:border-emerald-300",
+      },
+      blue: {
+        accent: "text-blue-600",
+        bg: "bg-blue-50",
+        border: "border-blue-200",
+        hover: "hover:border-blue-300",
+      },
+      purple: {
+        accent: "text-purple-600",
+        bg: "bg-purple-50",
+        border: "border-purple-200",
+        hover: "hover:border-purple-300",
+      },
+    };
+    return colorMap[color as keyof typeof colorMap] || colorMap.emerald;
+  };
+
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
             Our Programs
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Three comprehensive programs designed to create lasting change in
-            communities across Kenya
+          <p className="text-l text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Three comprehensive programs designed to create lasting change and
+            empower communities across Kenya through innovation and
+            collaboration.
           </p>
         </div>
 
+        {/* Programs Grid */}
         <div className="grid lg:grid-cols-3 gap-8">
-          {programs.map((program, index) => (
-            <Card key={index} className="p-8 hover:shadow-lg transition-shadow">
-              <div className="mb-6">{program.icon}</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                {program.title}
-              </h3>
-              <p className="text-gray-600 mb-6">{program.description}</p>
-              <ul className="space-y-2 mb-6">
-                {program.features.map((feature, featureIndex) => (
-                  <li
-                    key={featureIndex}
-                    className="flex items-center text-sm text-gray-600"
-                  >
-                    <svg
-                      className="w-4 h-4 text-emerald-500 mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
+          {programs.map((program, index) => {
+            const colors = getColorClasses(program.color);
+
+            return (
+              <Card
+                key={index}
+                className={`group relative overflow-hidden border-2 ${colors.border} ${colors.hover} hover:shadow-2xl transition-all duration-300 hover:-translate-y-2`}
+              >
+                {/* Image Section */}
+                <div className="relative h-48 overflow-hidden">
+                  <Image
+                    src={program.image}
+                    alt={program.title}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                </div>
+
+                {/* Content Section */}
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-gray-700 transition-colors">
+                    {program.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                    {program.description}
+                  </p>
+
+                  {/* Features List */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {program.features.map((feature, featureIndex) => (
+                      <span
+                        key={featureIndex}
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${colors.bg} ${colors.accent}`}
+                      >
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* CTA Button */}
+                  <Link href={program.href}>
+                    <Button
+                      variant="outline"
+                      className={`w-full relative overflow-hidden border-2 ${colors.border} ${colors.accent} bg-white hover:bg-transparent transition-all duration-500 group/btn`}
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
+                      <div
+                        className={`absolute inset-0 ${colors.bg} transform scale-x-0 group-hover/btn:scale-x-100 transition-transform duration-500 origin-left`}
                       />
-                    </svg>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <Button variant="outline" className="w-full">
-                Learn More
-              </Button>
-            </Card>
-          ))}
+                      <span className="relative z-10 flex items-center justify-center space-x-2 group-hover/btn:font-semibold transition-all duration-300">
+                        <span>Learn More</span>
+                        <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 group-hover/btn:scale-110 transition-all duration-300" />
+                      </span>
+                    </Button>
+                  </Link>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </section>

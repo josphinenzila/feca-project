@@ -1,9 +1,11 @@
 import Programs from "@/components/landing/sections/Programs";
-import Values from "@/components/landing/sections/Values";
+import ContactCTA from "@/components/landing/sections/ContactCTA";
 import Header from "@/components/landing/layout/Header";
 import Footer from "@/components/landing/sections/Footer";
 import HeroSlider from "@/components/landing/sections/Hero";
-import Gallery from "@/components/landing/sections/Gallery1";
+import Gallery from "@/components/landing/sections/Gallery";
+import DonateCTA from "@/components/landing/sections/DonateCTA";
+import Testimonials from "@/components/landing/sections/Testimonials";
 
 export default function Home() {
   return (
@@ -11,8 +13,10 @@ export default function Home() {
       <Header />
       <HeroSlider />
       <Programs />
-      <Values />
+      <ContactCTA />
       <Gallery />
+      <DonateCTA />
+      <Testimonials />
       <Footer />
     </>
   );
